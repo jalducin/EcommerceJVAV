@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Pedidos — MetalShop</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    .orders-page { padding: var(--space-10) 0 var(--space-16); }
+
+    /* Status badges grandes */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--border-radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .status-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-pending   { background: rgba(212,175,55,0.12); color: var(--gold);       border: 1px solid rgba(212,175,55,0.3); }
+    .status-pending .dot   { background: var(--gold); box-shadow: 0 0 4px rgba(212,175,55,0.8); }
+
+    .status-shipped   { background: rgba(192,192,192,0.1); color: var(--silver);     border: 1px solid rgba(192,192,192,0.3); }
+    .status-shipped .dot   { background: var(--silver); box-shadow: 0 0 4px rgba(192,192,192,0.6); }
+
+    .status-delivered { background: rgba(104,211,145,0.1); color: var(--text-success); border: 1px solid rgba(104,211,145,0.3); }
+    .status-delivered .dot { background: var(--text-success); box-shadow: 0 0 4px rgba(104,211,145,0.6); }
+
+    .status-cancelled { background: rgba(252,129,129,0.1); color: var(--text-error);  border: 1px solid rgba(252,129,129,0.3); }
+    .status-cancelled .dot { background: var(--text-error); box-shadow: 0 0 4px rgba(252,129,129,0.6); }
+
+    /* Order card */
+    .order-card {
+      background: var(--bg-card);
+      border: var(--border-metal);
+      border-radius: var(--border-radius-xl);
+      margin-bottom: var(--space-4);
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+
+    .order-card:hover { border-color: rgba(212,175,55,0.2); }
+
+    .order-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5) var(--space-6);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .order-header:hover { background: rgba(255,255,255,0.02); }
+
+    .order-header-left { display: flex; flex-direction: column; gap: var(--space-1); }
+
+    .order-number {
+      font-family: var(--font-title);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--text-gold);
+    }
+
+    .order-date {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .order-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-2);
+    }
+
+    .order-total {
+      font-family: var(--font-title);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .order-chevron {
+      color: var(--text-muted);
+      transition: transform var(--transition);
+      display: flex;
+    }
+
+    .order-card.expanded .order-chevron { transform: rotate(180deg); }
+
+    /* Order detail panel */
+    .order-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .order-card.expanded .order-detail { max-height: 800px; }
+
+    .order-detail-inner {
+      border-top: var(--border-metal);
+      padding: var(--space-5) var(--space-6);
+    }
+
+    /* Timeline de estado */
+    .status-timeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: var(--space-6);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+    }
+
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      flex: 1;
+      min-width: 80px;
+      position: relative;
+    }
+
+    .timeline-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: calc(50% + 16px);
+      right: calc(-50% + 16px);
+      height: 2px;
+      background: var(--border-metal);
+      z-index: 0;
+    }
+
+    .timeline-step.done::after { background: var(--gold); opacity: 0.5; }
+
+    .timeline-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-surface);
+      border: 2px solid rgba(192,192,192,0.2);
+      position: relative;
+      z-index: 1;
+      transition: all var(--transition);
+    }
+
+    .timeline-step.done .timeline-dot {
+      background: rgba(212,175,55,0.15);
+      border-color: var(--gold);
+    }
+
+    .timeline-step.done .timeline-dot svg { color: var(--gold); }
+    .timeline-step:not(.done) .timeline-dot svg { color: var(--text-muted); }
+
+    .timeline-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .timeline-step.done .timeline-label { color: var(--text-secondary); }
+
+    /* Items de la orden */
+    .order-items-title {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+    }
+
+    .order-item-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: var(--border-metal);
+    }
+
+    .order-item-row:last-child { border-bottom: none; }
+
+    .order-item-img {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--border-radius);
+      object-fit: cover;
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .order-item-name { flex: 1; font-size: var(--text-sm); }
+    .order-item-qty  { font-size: var(--text-xs); color: var(--text-muted); }
+
+    .order-item-price {
+      font-family: var(--font-title);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    /* Address box */
+    .order-address-box {
+      margin-top: var(--space-5);
+      padding: var(--space-4);
+      background: var(--bg-surface);
+      border: var(--border-metal);
+      border-radius: var(--border-radius);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .order-address-box svg { color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+
+    /* Empty state */
+    .orders-empty {
+      text-align: center;
+      padding: var(--space-16);
+      color: var(--text-muted);
+    }
+
+    .orders-empty svg { margin: 0 auto var(--space-6); opacity: 0.3; display: block; }
+    .orders-empty h2  { font-family: var(--font-title); color: var(--text-secondary); margin-bottom: var(--space-2); }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--border-radius-full);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--bg-card);
+      border: var(--border-metal);
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+    }
+
+    .filter-tab.active {
+      background: rgba(212,175,55,0.1);
+      border-color: rgba(212,175,55,0.4);
+      color: var(--text-gold);
+    }
+
+    .filter-tab:hover:not(.active) { border-color: rgba(192,192,192,0.3); color: var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">⚙ MetalShop</a>
+    <div class="nav-search">
+      <span class="nav-search-icon"><i data-lucide="search" width="16" height="16"></i></span>
+      <input type="search" placeholder="Buscar productos..." aria-label="Buscar" />
+    </div>
+    <div class="nav-actions">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle" aria-label="Carrito">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrapper">
+  <div class="container">
+    <div class="orders-page">
+
+      <!-- Header -->
+      <div style="margin-bottom:var(--space-8)">
+        <nav aria-label="Ruta" style="font-size:var(--text-sm);color:var(--text-muted);margin-bottom:var(--space-2)">
+          <a href="/" style="color:var(--text-muted)">Inicio</a> › <span>Mis Pedidos</span>
+        </nav>
+        <h1 style="font-family:var(--font-title);font-size:var(--text-3xl)">
+          <i data-lucide="package" width="32" height="32" style="display:inline-block;vertical-align:middle;color:var(--gold);margin-right:var(--space-3)"></i>
+          Mis Pedidos
+        </h1>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs" role="tablist" aria-label="Filtrar por estado" id="status-filters">
+        <button class="filter-tab active" data-status="all">Todos</button>
+        <button class="filter-tab" data-status="pending">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;margin-right:4px;vertical-align:middle"></span>
+          Pendientes
+        </button>
+        <button class="filter-tab" data-status="shipped">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--silver);display:inline-block;margin-right:4px;vertical-align:middle"></span>
+          Enviados
+        </button>
+        <button class="filter-tab" data-status="delivered">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--text-success);display:inline-block;margin-right:4px;vertical-align:middle"></span>
+          Entregados
+        </button>
+        <button class="filter-tab" data-status="cancelled">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--text-error);display:inline-block;margin-right:4px;vertical-align:middle"></span>
+          Cancelados
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div id="orders-loading">
+        <div class="skeleton" style="height:96px;border-radius:var(--border-radius-xl);margin-bottom:var(--space-4)"></div>
+        <div class="skeleton" style="height:96px;border-radius:var(--border-radius-xl);margin-bottom:var(--space-4)"></div>
+        <div class="skeleton" style="height:96px;border-radius:var(--border-radius-xl)"></div>
+      </div>
+
+      <!-- Orders list -->
+      <div id="orders-list" class="hidden"></div>
+
+      <!-- Empty -->
+      <div id="orders-empty" class="orders-empty hidden">
+        <i data-lucide="package" width="72" height="72"></i>
+        <h2>Aún no tienes pedidos</h2>
+        <p style="margin-bottom:var(--space-6)">Cuando realices tu primera compra, aparecerá aquí.</p>
+        <a href="/" class="btn btn-primary">
+          <i data-lucide="shopping-bag" width="16" height="16"></i>
+          Explorar Catálogo
+        </a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Cart Drawer -->
+<div class="drawer-overlay" id="cart-overlay" role="dialog" aria-modal="true">
+  <aside class="drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title"><i data-lucide="shopping-cart" width="20" height="20"></i> Mi Carrito</h2>
+      <button class="modal-close" id="cart-close"><i data-lucide="x" width="20" height="20"></i></button>
+    </div>
+    <div class="drawer-body" id="cart-items"></div>
+    <div class="drawer-footer" id="cart-footer" style="display:none">
+      <div class="cart-summary-line"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="cart-summary-total"><span>Total</span><span id="cart-total">$0.00</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i data-lucide="arrow-right" width="16" height="16"></i></a>
+    </div>
+  </aside>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/pages/orders.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

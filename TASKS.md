@@ -95,11 +95,11 @@
 
 ## FASE 5 — Auth Frontend y Perfil (Día 9)
 
-- [ ] `login.html`: tabs Login / Registro con diseño metálico premium
-- [ ] `js/auth.js`: login, registro, almacenamiento de tokens, refresh automático, logout
-- [ ] Navbar dinámica: mostrar usuario / botón login según estado de auth
-- [ ] `orders.html`: historial de órdenes del cliente con estados visuales (badges de color)
-- [ ] Redirect guards: proteger páginas de checkout y orders si no está autenticado
+- [x] `login.html`: tabs Login / Registro con diseño metálico premium
+- [x] `js/auth.js`: login, registro, almacenamiento de tokens, refresh automático, logout
+- [x] Navbar dinámica: mostrar usuario / botón login según estado de auth
+- [x] `orders.html`: historial de órdenes del cliente con estados visuales (badges de color)
+- [x] Redirect guards: proteger páginas de checkout y orders si no está autenticado
 - [ ] `js/pages/forgot-password.js` + formulario recuperación de contraseña
 
 ---
