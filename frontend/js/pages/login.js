@@ -246,7 +246,7 @@
     // Forgot password link
     document.getElementById('go-forgot')?.addEventListener('click', (e) => {
       e.preventDefault();
-      showToast('Recuperación de contraseña disponible próximamente', 'info');
+      window.location.href = '/forgot-password.html';
     });
 
     // Si URL tiene ?tab=register, abrir pestaña de registro

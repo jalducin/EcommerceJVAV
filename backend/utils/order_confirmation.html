@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pedido</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1A1A2E;
+            color: #C0C0C0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #4A5568;
+            border: 1px solid #C0C0C0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(145deg, #D4AF37, #B87333);
+            color: #1A1A2E;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            font-size: 28px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .content {
+            padding: 30px;
+        }
+        .content h2 {
+            font-family: 'Rajdhani', sans-serif;
+            color: #D4AF37;
+            border-bottom: 1px solid #D4AF37;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #C0C0C0;
+        }
+        .items-table th {
+            color: #E8E8E8;
+            font-weight: 700;
+        }
+        .total-row td {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #D4AF37;
+            text-align: right;
+            padding-top: 15px;
+            border-top: 2px solid #D4AF37;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #C0C0C0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #D4AF37;
+            color: #1A1A2E;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Gracias por tu compra!</h1>
+        </div>
+        <div class="content">
+            <h2>Resumen del Pedido #{{ order_id }}</h2>
+            <p>Hola, hemos recibido tu pedido con fecha {{ created_at }}. Aquí tienes los detalles:</p>
+            
+            <table class="items-table">
+                <thead><tr><th>Producto</th><th>Cantidad</th><th style="text-align:right;">Subtotal</th></tr></thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr><td>{{ item.product.name }}</td><td>{{ item.quantity }}</td><td style="text-align:right;">${{ "%.2f"|format(item.unit_price * item.quantity) }}</td></tr>
+                    {% endfor %}
+                    <tr class="total-row"><td colspan="2">Total:</td><td style="text-align:right;">${{ total }}</td></tr>
+                </tbody>
+            </table>
+
+            <p>Puedes ver el estado de tu pedido en cualquier momento desde tu historial.</p>
+            <a href="{{ frontend_url }}/orders.html" class="button">Ver mis pedidos</a>
+        </div>
+        <div class="footer">&copy; {{ "now"|date("Y") }} MetalShop. Todos los derechos reservados.</div>
+    </div>
+</body>
+</html>

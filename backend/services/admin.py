@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -8,144 +8,101 @@ from sqlalchemy.orm import selectinload
 from ..models.order import Order
 from ..models.product import Product
 from ..models.user import User
-from ..schemas.admin import (
-    AdminOrderList,
-    AdminOrderResponse,
-    DashboardStats,
-    OrderStatusUpdate,
-)
+from ..schemas.admin import AdminOrderList, DashboardStats, DailySale, OrderStatusUpdate
+from ..schemas.order import OrderResponse
 
 
 async def get_dashboard_stats(db: AsyncSession) -> DashboardStats:
-    now = datetime.now(timezone.utc)
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end   = today_start + timedelta(days=1)
+    """Calcula y devuelve las estadísticas para el dashboard de admin."""
+    today = date.today()
+    start_of_day = datetime.combine(today, datetime.min.time())
 
-    # Ventas hoy (órdenes no canceladas)
-    sales_today_row = await db.execute(
-        select(func.sum(Order.total)).where(
-            Order.created_at >= today_start,
-            Order.created_at < today_end,
-            Order.status != "cancelled",
-        )
+    # Ventas y órdenes de hoy
+    sales_today_query = select(func.sum(Order.total), func.count(Order.id)).where(
+        Order.created_at >= start_of_day
     )
-    sales_today = float(sales_today_row.scalar_one() or 0)
-
-    # Órdenes hoy
-    orders_today = (
-        await db.execute(
-            select(func.count(Order.id)).where(
-                Order.created_at >= today_start, Order.created_at < today_end
-            )
-        )
-    ).scalar_one()
+    sales_res = await db.execute(sales_today_query)
+    sales_today, orders_today = sales_res.one_or_none() or (0, 0)
 
     # Órdenes pendientes
-    orders_pending = (
-        await db.execute(select(func.count(Order.id)).where(Order.status == "pending"))
-    ).scalar_one()
+    pending_orders_query = select(func.count(Order.id)).where(Order.status == "pending")
+    pending_orders = await db.scalar(pending_orders_query)
 
-    # Productos con stock bajo (1–4)
-    products_low_stock = (
-        await db.execute(
-            select(func.count(Product.id)).where(
-                Product.is_active == True,  # noqa: E712
-                Product.stock < 5,
-                Product.stock > 0,
-            )
+    # Estadísticas de productos
+    low_stock_query = select(func.count(Product.id)).where(Product.stock > 0, Product.stock < 5)
+    low_stock_count = await db.scalar(low_stock_query)
+
+    out_of_stock_query = select(func.count(Product.id)).where(Product.stock == 0)
+    out_of_stock_count = await db.scalar(out_of_stock_query)
+
+    total_products_query = select(func.count(Product.id))
+    total_products = await db.scalar(total_products_query)
+
+    # Estadísticas de usuarios
+    total_users_query = select(func.count(User.id)).where(User.role == "client")
+    total_users = await db.scalar(total_users_query)
+
+    # Ventas de los últimos 7 días para la gráfica
+    sales_last_7_days_data = []
+    seven_days_ago = today - timedelta(days=6)
+
+    sales_by_day_query = (
+        select(
+            func.date(Order.created_at).label("sale_date"),
+            func.sum(Order.total).label("daily_total"),
         )
-    ).scalar_one()
+        .where(func.date(Order.created_at) >= seven_days_ago)
+        .group_by(func.date(Order.created_at))
+        .order_by(func.date(Order.created_at))
+    )
+    sales_by_day_res = await db.execute(sales_by_day_query)
+    sales_map = {row.sale_date: row.daily_total for row in sales_by_day_res.all()}
 
-    # Productos sin stock
-    products_out_stock = (
-        await db.execute(
-            select(func.count(Product.id)).where(
-                Product.is_active == True, Product.stock == 0  # noqa: E712
-            )
-        )
-    ).scalar_one()
-
-    # Total productos activos
-    total_products = (
-        await db.execute(
-            select(func.count(Product.id)).where(Product.is_active == True)  # noqa: E712
-        )
-    ).scalar_one()
-
-    # Total usuarios
-    total_users = (await db.execute(select(func.count(User.id)))).scalar_one()
-
-    # Ventas últimos 7 días
-    seven_days_ago = today_start - timedelta(days=6)
-    sales_last_7_days: list[dict] = []
     for i in range(7):
-        day_start = seven_days_ago + timedelta(days=i)
-        day_end   = day_start + timedelta(days=1)
-        result = await db.execute(
-            select(func.sum(Order.total)).where(
-                Order.created_at >= day_start,
-                Order.created_at < day_end,
-                Order.status != "cancelled",
-            )
+        current_date = seven_days_ago + timedelta(days=i)
+        day_str = current_date.strftime("%a").capitalize()
+        sales_last_7_days_data.append(
+            DailySale(date=day_str, total=sales_map.get(current_date, 0.0))
         )
-        sales_last_7_days.append({
-            "date":  day_start.strftime("%d/%m"),
-            "total": float(result.scalar_one() or 0),
-        })
 
     return DashboardStats(
-        sales_today=sales_today,
-        orders_today=orders_today,
-        orders_pending=orders_pending,
-        products_low_stock=products_low_stock,
-        products_out_stock=products_out_stock,
-        total_products=total_products,
-        total_users=total_users,
-        sales_last_7_days=sales_last_7_days,
+        sales_today=sales_today or 0.0,
+        orders_today=orders_today or 0,
+        orders_pending=pending_orders or 0,
+        products_low_stock=low_stock_count or 0,
+        products_out_stock=out_of_stock_count or 0,
+        total_products=total_products or 0,
+        total_users=total_users or 0,
+        sales_last_7_days=sales_last_7_days_data,
     )
 
 
 async def get_admin_orders(
-    db: AsyncSession,
-    limit: int = 20,
-    offset: int = 0,
-    status_filter: str | None = None,
+    db: AsyncSession, limit: int, offset: int, status: str | None
 ) -> AdminOrderList:
-    query = select(Order).options(selectinload(Order.user))
-    if status_filter:
-        query = query.where(Order.status == status_filter)
+    """Obtiene todos los pedidos con paginación y filtro."""
+    query = select(Order).options(selectinload(Order.user)).order_by(Order.created_at.desc())
+    count_query = select(func.count(Order.id))
 
-    count_q = select(func.count()).select_from(query.subquery())
-    total   = (await db.execute(count_q)).scalar_one()
+    if status:
+        query = query.where(Order.status == status)
+        count_query = count_query.where(Order.status == status)
 
-    result = await db.execute(
-        query.order_by(Order.created_at.desc()).offset(offset).limit(limit)
-    )
+    total = await db.scalar(count_query)
+    result = await db.execute(query.limit(limit).offset(offset))
     orders = result.scalars().all()
 
-    items = [
-        AdminOrderResponse(
-            id=o.id,
-            user_id=o.user_id,
-            user_email=o.user.email if o.user else None,
-            status=o.status,
-            total=o.total,
-            shipping_address=o.shipping_address,
-            created_at=o.created_at,
-        )
-        for o in orders
-    ]
-    return AdminOrderList(items=items, total=total, limit=limit, offset=offset)
+    return AdminOrderList(items=orders, total=total or 0)
 
 
-async def update_order_status(
-    db: AsyncSession, order_id: int, data: OrderStatusUpdate
-) -> Order:
-    result = await db.execute(select(Order).where(Order.id == order_id))
-    order = result.scalar_one_or_none()
+async def update_order_status(db: AsyncSession, order_id: int, data: OrderStatusUpdate):
+    """Actualiza el estado de un pedido."""
+    order = await db.get(Order, order_id)
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Orden no encontrada")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado")
+
     order.status = data.status
-    await db.flush()
+    db.add(order)
+    await db.commit()
     await db.refresh(order)
     return order

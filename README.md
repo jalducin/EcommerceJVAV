@@ -215,6 +215,61 @@ Los tests usan **SQLite en memoria** — sin necesidad de BD externa.
 
 ---
 
+## 🚀 Deploy a Producción
+
+El proyecto está configurado para ser desplegado fácilmente con Docker.
+
+### 1. Configurar Variables de Entorno
+
+Crea un archivo `.env` para producción basado en `.env.example`:
+
+```env
+ENVIRONMENT=production
+FRONTEND_URL=https://tu-dominio.com # URL pública del frontend
+
+# URL de la base de datos PostgreSQL
+DATABASE_URL=postgresql+asyncpg://metalshop:metalshop@db:5432/metalshop
+
+# Genera una clave segura con: openssl rand -hex 32
+SECRET_KEY=TU_SECRET_KEY_DE_PRODUCCION_SUPER_SEGURO
+
+# Configuración de email para producción
+SMTP_HOST=smtp.tu-proveedor.com
+SMTP_PORT=587
+SMTP_USER=tu-usuario-smtp
+SMTP_PASSWORD=tu-password-smtp
+EMAILS_FROM=noreply@tu-dominio.com
+```
+
+### 2. Levantar los servicios
+
+Usa Docker Compose para construir y ejecutar la imagen de producción:
+
+```bash
+# Construye la imagen usando el stage 'production' y levanta los servicios
+docker compose up --build -d
+```
+
+### 3. Ejecutar Migraciones
+
+Una vez que los contenedores estén corriendo, aplica las migraciones de la base de datos:
+
+```bash
+docker compose exec app poetry run alembic upgrade head
+```
+
+### 4. Poblar la Base de Datos (Opcional)
+
+Si deseas poblar la base de datos con datos de ejemplo en producción (no recomendado para un sitio real):
+
+```bash
+docker compose exec app poetry run python seed_products.py
+```
+
+¡Tu tienda **MetalShop** ya está en producción y accesible en el puerto 8000 de tu servidor!
+
+---
+
 ## 🔐 Seguridad
 
 - Contraseñas hasheadas con **bcrypt** (cost factor 12)
@@ -262,9 +317,9 @@ EMAILS_FROM=noreply@metalshop.com
 | **Fase 3** | Productos, Catálogo y Frontend base | ✅ Completada |
 | **Fase 4** | Carrito y Checkout | ✅ Completada |
 | **Fase 5** | Auth Frontend (login/registro) + Historial de pedidos | ✅ Completada |
-| **Fase 6** | Panel Administrador | 🔲 Pendiente |
-| **Fase 7** | Email de confirmación + Rate limiting + Pulido | 🔲 Pendiente |
-| **Fase 8** | Tests completos + Deploy | 🔲 Pendiente |
+| **Fase 6** | Panel Administrador | ✅ Completada |
+| **Fase 7** | Email de confirmación + Rate limiting + Pulido | ✅ Completada |
+| **Fase 8** | Tests completos + Deploy | ✅ Completada |
 
 ---
 
@@ -288,8 +343,6 @@ EMAILS_FROM=noreply@metalshop.com
 - **Confirmación** — Número de orden, timeline de estado, animación confetti
 - **Autenticación** — Login / Registro con tabs, strength bar, JWT con refresh automático
 - **Historial** — Órdenes con filtros por estado, detalle expandible, timeline visual
-
-### 🔲 Próximos
 - **Panel Admin** — Dashboard métricas, CRUD productos, gestión de pedidos
 - **Email** — Confirmación de pedido en HTML metálico
 - **Rate limiting** — Protección endpoint login (slowapi)

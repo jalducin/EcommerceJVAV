@@ -32,7 +32,7 @@
 - [x] Modelo `Product`: id, name, description, price, stock, category, images, is_active
 - [x] Modelo `Order` + `OrderItem`: relación one-to-many
 - [x] Modelo `CartItem`: user_id + product_id + quantity
-- [ ] Crear y ejecutar migración inicial con Alembic
+- [x] Crear y ejecutar migración inicial con Alembic
 
 ### Autenticación
 - [x] Schemas Pydantic: `UserCreate`, `UserLogin`, `UserResponse`, `Token`
@@ -100,56 +100,57 @@
 - [x] Navbar dinámica: mostrar usuario / botón login según estado de auth
 - [x] `orders.html`: historial de órdenes del cliente con estados visuales (badges de color)
 - [x] Redirect guards: proteger páginas de checkout y orders si no está autenticado
-- [ ] `js/pages/forgot-password.js` + formulario recuperación de contraseña
+- [x] `js/pages/forgot-password.js` + formulario recuperación de contraseña
 
 ---
 
 ## FASE 6 — Panel Admin (Días 10-11)
 
 ### Backend
-- [ ] `GET /api/admin/dashboard`: total ventas hoy, pedidos pendientes, productos con stock < 5
-- [ ] `GET /api/admin/orders`: todos los pedidos con paginación y filtro por estado
-- [ ] `PATCH /api/admin/orders/{id}/status`: cambiar estado del pedido
+- [x] `GET /api/admin/dashboard`: total ventas hoy, pedidos pendientes, productos con stock < 5
+- [x] `GET /api/admin/orders`: todos los pedidos con paginación y filtro por estado
+- [x] `PATCH /api/admin/orders/{id}/status`: cambiar estado del pedido
 
 ### Frontend Admin
-- [ ] `admin/dashboard.html`: cards métricas + gráfica ventas últimos 7 días (Chart.js o CSS puro)
-- [ ] `admin/products.html`: tabla de productos + modal crear/editar + confirmación eliminar
-- [ ] `js/admin/products.js`: CRUD completo con validaciones inline
-- [ ] `admin/orders.html`: tabla de pedidos + filtros por estado + selector de cambio de estado
-- [ ] Guard de ruta: solo accesible con rol `admin`
+- [x] `admin/dashboard.html`: cards métricas + gráfica ventas últimos 7 días (Chart.js o CSS puro)
+- [x] `admin/products.html`: tabla de productos + modal crear/editar + confirmación eliminar
+- [x] `js/admin/products.js`: CRUD completo con validaciones inline
+- [x] `admin/orders.html`: tabla de pedidos + filtros por estado + selector de cambio de estado
+- [x] `js/admin/orders.js`: Lógica de listado, paginación y cambio de estado
+- [x] Guard de ruta: solo accesible con rol `admin`
 
 ---
 
 ## FASE 7 — Email y Pulido (Día 12)
 
-- [ ] Configurar FastAPI-Mail con template Jinja2
-- [ ] Template HTML de confirmación de pedido (estilo metálico)
-- [ ] Trigger de email al crear orden exitosamente
-- [ ] Implementar rate limiting en endpoint de login (slowapi)
-- [ ] Revisar y ajustar responsive en todos los breakpoints (375, 768, 1280px)
-- [ ] Añadir favicon metálico (SVG inline)
-- [ ] Metatags SEO básicos en todas las páginas
-- [ ] Revisar accesibilidad: contraste de colores, labels en forms, aria-labels
+- [x] Configurar FastAPI-Mail con template Jinja2
+- [x] Template HTML de confirmación de pedido (estilo metálico)
+- [x] Trigger de email al crear orden exitosamente
+- [x] Implementar rate limiting en endpoint de login (slowapi)
+- [x] Revisar y ajustar responsive en todos los breakpoints (375, 768, 1280px)
+- [x] Añadir favicon metálico (SVG inline)
+- [x] Metatags SEO básicos en todas las páginas
+- [x] Revisar accesibilidad: contraste de colores, labels en forms, aria-labels
 
 ---
 
 ## FASE 8 — Tests y Deploy (Día 13-14)
 
 ### Tests
-- [ ] `tests/test_auth.py`: register, login, refresh, rutas protegidas
-- [ ] `tests/test_products.py`: CRUD, filtros, paginación
-- [ ] `tests/test_cart.py`: agregar, actualizar, eliminar, sync
-- [ ] `tests/test_orders.py`: checkout con stock suficiente, checkout sin stock
-- [ ] `tests/test_admin.py`: acceso con y sin rol admin
-- [ ] Configurar `pytest` con base de datos SQLite en memoria para tests
-- [ ] CI básico: `ruff check` + `pytest` en GitHub Actions
+- [x] `tests/test_auth.py`: register, login, refresh, rutas protegidas
+- [x] `tests/test_products.py`: CRUD, filtros, paginación
+- [x] `tests/test_cart.py`: agregar, actualizar, eliminar, sync
+- [x] `tests/test_orders.py`: checkout con stock suficiente, checkout sin stock
+- [x] `tests/test_admin.py`: acceso con y sin rol admin
+- [x] Configurar `pytest` con base de datos SQLite en memoria para tests
+- [x] CI básico: `ruff check` + `pytest` en GitHub Actions
 
 ### Deploy (opcional)
-- [ ] Configurar variables de entorno para producción
-- [ ] Dockerfile producción con Gunicorn + Uvicorn workers
-- [ ] Configurar CORS para dominio de producción
-- [ ] Servir frontend como archivos estáticos desde FastAPI (`StaticFiles`)
-- [ ] Documentar proceso de deploy en `README.md`
+- [x] Configurar variables de entorno para producción
+- [x] Dockerfile producción con Gunicorn + Uvicorn workers
+- [x] Configurar CORS para dominio de producción
+- [x] Servir frontend como archivos estáticos desde FastAPI (`StaticFiles`)
+- [x] Documentar proceso de deploy en `README.md`
 
 ---
 

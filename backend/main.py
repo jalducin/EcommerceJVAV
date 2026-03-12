@@ -1,11 +1,14 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from .config import settings
 from .database import create_tables
+from .limiter import limiter
 from .routers import admin as admin_router
 from .routers import auth as auth_router
 from .routers import cart as cart_router
@@ -15,6 +18,7 @@ from .routers import products as products_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    app.state.limiter = limiter
     await create_tables()
     yield
 
@@ -36,6 +40,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Routers
 app.include_router(auth_router.router)
