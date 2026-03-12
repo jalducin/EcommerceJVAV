@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Carrito — MetalShop</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    .cart-page { padding: var(--space-10) 0 var(--space-16); }
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+    @media (min-width: 768px) {
+      .cart-layout { grid-template-columns: 1fr 360px; }
+    }
+
+    /* Items list */
+    .cart-items-list { display: flex; flex-direction: column; gap: var(--space-4); }
+
+    .cart-full-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--bg-card);
+      border: var(--border-metal);
+      border-radius: var(--border-radius-lg);
+      transition: border-color var(--transition-fast);
+    }
+    .cart-full-item:hover { border-color: rgba(212,175,55,0.2); }
+
+    .cart-full-img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      background: var(--bg-surface);
+    }
+
+    .cart-full-info { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .cart-full-name {
+      font-family: var(--font-title);
+      font-size: var(--text-lg);
+      font-weight: 600;
+    }
+
+    .cart-full-price {
+      font-family: var(--font-title);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cart-full-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .qty-controls-full {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: var(--border-metal);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    .qty-controls-full button {
+      width: 36px;
+      height: 36px;
+      background: var(--steel-dark);
+      color: var(--text-primary);
+      font-size: var(--text-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background var(--transition-fast);
+    }
+    .qty-controls-full button:hover { background: var(--steel); }
+    .qty-controls-full input {
+      width: 52px;
+      height: 36px;
+      text-align: center;
+      background: var(--bg-input);
+      border: none;
+      border-left: var(--border-metal);
+      border-right: var(--border-metal);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* Order summary */
+    .order-summary {
+      background: var(--bg-card);
+      border: var(--border-gold);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: calc(var(--nav-height) + var(--space-4));
+    }
+    .summary-title {
+      font-family: var(--font-title);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+    }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-title);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      padding-top: var(--space-4);
+      margin-top: var(--space-4);
+      border-top: var(--border-gold);
+    }
+    .summary-total span:last-child {
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Empty */
+    .cart-empty {
+      text-align: center;
+      padding: var(--space-16);
+      color: var(--text-muted);
+    }
+    .cart-empty svg { margin: 0 auto var(--space-6); opacity: 0.3; display: block; }
+    .cart-empty h2 { font-family: var(--font-title); margin-bottom: var(--space-2); color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">⚙ MetalShop</a>
+    <div class="nav-search">
+      <span class="nav-search-icon"><i data-lucide="search" width="16" height="16"></i></span>
+      <input type="search" placeholder="Buscar productos..." aria-label="Buscar" id="nav-search-input" />
+    </div>
+    <div class="nav-actions">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle" aria-label="Abrir carrito">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrapper">
+  <div class="container">
+    <div class="cart-page">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-8);flex-wrap:wrap;gap:var(--space-4)">
+        <div>
+          <nav aria-label="Ruta de navegación" style="font-size:var(--text-sm);color:var(--text-muted);margin-bottom:var(--space-2)">
+            <a href="/" style="color:var(--text-muted)">Inicio</a>
+            <span style="margin:0 var(--space-2)">›</span>
+            <span>Carrito</span>
+          </nav>
+          <h1 style="font-family:var(--font-title);font-size:var(--text-3xl)">
+            Mi Carrito <span id="cart-title-count" style="color:var(--text-muted);font-size:var(--text-xl)"></span>
+          </h1>
+        </div>
+        <button id="clear-cart-btn" class="btn btn-ghost btn-sm" style="display:none" aria-label="Vaciar carrito">
+          <i data-lucide="trash-2" width="14" height="14"></i>
+          Vaciar carrito
+        </button>
+      </div>
+
+      <div id="cart-loading" style="text-align:center;padding:var(--space-16)">
+        <div class="skeleton" style="height:120px;border-radius:var(--border-radius-lg);margin-bottom:var(--space-4)"></div>
+        <div class="skeleton" style="height:120px;border-radius:var(--border-radius-lg);margin-bottom:var(--space-4)"></div>
+      </div>
+
+      <div id="cart-content" class="hidden">
+        <div class="cart-layout">
+          <!-- Items -->
+          <div>
+            <div class="cart-items-list" id="cart-items-list"></div>
+            <div id="cart-empty-state" class="cart-empty hidden">
+              <i data-lucide="shopping-cart" width="64" height="64"></i>
+              <h2>Tu carrito está vacío</h2>
+              <p style="margin-bottom:var(--space-6)">Agrega productos desde el catálogo para continuar.</p>
+              <a href="/" class="btn btn-primary">
+                <i data-lucide="shopping-bag" width="16" height="16"></i>
+                Explorar Catálogo
+              </a>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div id="cart-summary-panel" class="hidden">
+            <div class="order-summary">
+              <h2 class="summary-title">
+                <i data-lucide="receipt" width="18" height="18" style="color:var(--gold)"></i>
+                Resumen del Pedido
+              </h2>
+              <div class="summary-row"><span>Subtotal</span><span id="sum-subtotal">$0.00</span></div>
+              <div class="summary-row">
+                <span>Envío</span>
+                <span style="color:var(--text-success)">Calculado en checkout</span>
+              </div>
+              <div class="summary-row"><span>IVA incluido</span><span>✓</span></div>
+              <div class="summary-total">
+                <span>Total</span>
+                <span id="sum-total">$0.00</span>
+              </div>
+              <a href="/checkout.html" class="btn btn-primary btn-block" style="margin-top:var(--space-5);padding:var(--space-4)">
+                Proceder al Checkout
+                <i data-lucide="arrow-right" width="18" height="18"></i>
+              </a>
+              <a href="/" class="btn btn-ghost btn-block btn-sm" style="margin-top:var(--space-3)">
+                Seguir comprando
+              </a>
+              <div style="margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-metal);display:flex;flex-direction:column;gap:var(--space-2)">
+                <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted)">
+                  <i data-lucide="shield-check" width="12" height="12" style="color:var(--gold)"></i>
+                  Pago 100% seguro
+                </div>
+                <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted)">
+                  <i data-lucide="refresh-cw" width="12" height="12" style="color:var(--gold)"></i>
+                  Devoluciones gratis 30 días
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Cart Drawer -->
+<div class="drawer-overlay" id="cart-overlay" role="dialog" aria-modal="true">
+  <aside class="drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title"><i data-lucide="shopping-cart" width="20" height="20"></i> Mi Carrito</h2>
+      <button class="modal-close" id="cart-close"><i data-lucide="x" width="20" height="20"></i></button>
+    </div>
+    <div class="drawer-body" id="cart-items">
+      <div class="drawer-empty"><i data-lucide="shopping-cart" width="48" height="48"></i><p>Tu carrito está vacío</p></div>
+    </div>
+    <div class="drawer-footer" id="cart-footer" style="display:none">
+      <div class="cart-summary-line"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="cart-summary-total"><span>Total</span><span id="cart-total">$0.00</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i data-lucide="arrow-right" width="16" height="16"></i></a>
+    </div>
+  </aside>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+  lucide.createIcons();
+
+  // Renderizar página de carrito completa
+  async function renderCartPage() {
+    const $loading = document.getElementById('cart-loading');
+    const $content = document.getElementById('cart-content');
+    const $list    = document.getElementById('cart-items-list');
+    const $empty   = document.getElementById('cart-empty-state');
+    const $summary = document.getElementById('cart-summary-panel');
+    const $clear   = document.getElementById('clear-cart-btn');
+    const $titleCount = document.getElementById('cart-title-count');
+
+    await new Promise(r => setTimeout(r, 300)); // esperar a que cart.js cargue
+
+    const items    = Cart.getItems();
+    const subtotal = Cart.getSubtotal();
+    const count    = Cart.getCount();
+
+    $loading.classList.add('hidden');
+    $content.classList.remove('hidden');
+
+    if ($titleCount) $titleCount.textContent = count > 0 ? `(${count})` : '';
+
+    if (!items.length) {
+      $empty.classList.remove('hidden');
+      $summary.classList.add('hidden');
+      return;
+    }
+
+    $empty.classList.add('hidden');
+    $summary.classList.remove('hidden');
+    $clear.style.display = 'flex';
+
+    // Subtotal y total
+    document.getElementById('sum-subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('sum-total').textContent    = formatPrice(subtotal);
+
+    // Renderizar ítems
+    $list.innerHTML = items.map(item => {
+      const img = item.product?.images?.[0];
+      return `
+        <div class="cart-full-item" data-item-id="${item.id}" data-product-id="${item.product_id}">
+          ${img
+            ? `<img src="${img}" alt="${item.product?.name}" class="cart-full-img" />`
+            : `<div class="cart-full-img" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="package" width="32" height="32"></i></div>`
+          }
+          <div class="cart-full-info">
+            <a href="/product.html?id=${item.product_id}" class="cart-full-name" style="color:var(--text-primary)">${item.product?.name || 'Producto'}</a>
+            <span class="cart-full-price">${formatPrice((item.product?.price || 0) * item.quantity)}</span>
+            <span style="font-size:var(--text-xs);color:var(--text-muted)">${formatPrice(item.product?.price || 0)} c/u</span>
+            <div class="cart-full-controls">
+              <div class="qty-controls-full">
+                <button class="btn-dec" aria-label="Reducir">−</button>
+                <input type="number" value="${item.quantity}" min="1" max="${item.product?.stock || 99}" class="qty-input" aria-label="Cantidad" />
+                <button class="btn-inc" aria-label="Aumentar">+</button>
+              </div>
+              <button class="btn btn-ghost btn-sm btn-remove" style="color:var(--text-error)" aria-label="Eliminar">
+                <i data-lucide="trash-2" width="14" height="14"></i> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    lucide.createIcons({ elements: [$list] });
+
+    // Eventos
+    $list.querySelectorAll('.cart-full-item').forEach(el => {
+      const itemId    = parseInt(el.dataset.itemId);
+      const productId = parseInt(el.dataset.productId);
+      const $input    = el.querySelector('.qty-input');
+      const $dec      = el.querySelector('.btn-dec');
+      const $inc      = el.querySelector('.btn-inc');
+
+      $dec.addEventListener('click', async () => {
+        const v = Math.max(1, parseInt($input.value) - 1);
+        $input.value = v;
+        await Cart.update(itemId, productId, v);
+        renderCartPage();
+      });
+      $inc.addEventListener('click', async () => {
+        const v = parseInt($input.value) + 1;
+        $input.value = v;
+        await Cart.update(itemId, productId, v);
+        renderCartPage();
+      });
+      $input.addEventListener('change', async () => {
+        const v = Math.max(1, parseInt($input.value) || 1);
+        $input.value = v;
+        await Cart.update(itemId, productId, v);
+        renderCartPage();
+      });
+      el.querySelector('.btn-remove').addEventListener('click', async () => {
+        el.style.opacity = '0.4';
+        await Cart.remove(itemId, productId);
+        renderCartPage();
+      });
+    });
+
+    // Vaciar carrito
+    $clear.onclick = async () => {
+      Cart.clear();
+      renderCartPage();
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderCartPage, 400);
+  });
+</script>
+</body>
+</html>

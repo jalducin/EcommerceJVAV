@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MetalShop — Tienda de equipamiento y herramientas metálicas premium. Calidad industrial con diseño exclusivo." />
+  <meta name="keywords" content="metalshop, herramientas, acero, protección, equipamiento" />
+  <title>MetalShop — Catálogo</title>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* Estilos específicos de la página catálogo */
+    .mobile-filter-btn {
+      display: none;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    @media (max-width: 767px) {
+      .mobile-filter-btn { display: flex; }
+      .filters-sidebar {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-modal);
+        border-radius: 0;
+        overflow-y: auto;
+        top: 0;
+      }
+      .filters-sidebar.mobile-open { display: block; }
+    }
+
+    .no-results {
+      text-align: center;
+      padding: var(--space-16) var(--space-8);
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+
+    .no-results svg { opacity: 0.3; margin: 0 auto var(--space-4); }
+    .no-results h3 { font-family: var(--font-title); color: var(--text-secondary); margin-bottom: var(--space-2); }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────────────── -->
+<nav class="navbar" role="navigation" aria-label="Navegación principal">
+  <div class="container">
+    <a href="/" class="nav-logo" aria-label="MetalShop inicio">⚙ MetalShop</a>
+
+    <div class="nav-search" id="nav-search">
+      <span class="nav-search-icon" aria-hidden="true">
+        <i data-lucide="search" width="16" height="16"></i>
+      </span>
+      <input
+        type="search"
+        id="nav-search-input"
+        placeholder="Buscar productos..."
+        autocomplete="off"
+        aria-label="Buscar productos"
+      />
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle" aria-label="Abrir carrito">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+
+      <div id="auth-nav">
+        <!-- JS rellena: botón login o avatar usuario -->
+      </div>
+
+      <button class="nav-btn nav-mobile-toggle" id="mobile-menu-toggle" aria-label="Menú">
+        <i data-lucide="menu" width="20" height="20"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">
+      <i data-lucide="shield" width="12" height="12"></i>
+      Calidad Industrial Premium
+    </div>
+    <h1>Equipamiento Metálico<br/>de Alto Rendimiento</h1>
+    <p>Herramientas, protección y equipamiento fabricados con los mejores metales. Precisión y durabilidad garantizadas.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">500+</span>
+        <span class="stat-label">Productos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">24h</span>
+        <span class="stat-label">Envío Express</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">100%</span>
+        <span class="stat-label">Acero Certificado</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">5★</span>
+        <span class="stat-label">Valoración</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Catalog Layout ───────────────────────────────────────────── -->
+<main class="page-wrapper">
+  <div class="container">
+
+    <!-- Barra superior móvil -->
+    <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) 0 0;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm mobile-filter-btn" id="open-filters" aria-expanded="false" aria-controls="filters-sidebar">
+        <i data-lucide="sliders-horizontal" width="14" height="14"></i>
+        Filtros
+      </button>
+    </div>
+
+    <div class="catalog-layout">
+
+      <!-- ── Sidebar Filtros ─────────────────────────────────── -->
+      <aside class="filters-sidebar" id="filters-sidebar" role="complementary" aria-label="Filtros de búsqueda">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-5);">
+          <span class="filters-title">
+            <i data-lucide="filter" width="14" height="14"></i>
+            Filtros
+          </span>
+          <button class="filter-reset" id="reset-filters" aria-label="Limpiar filtros">Limpiar todo</button>
+          <button class="nav-btn" id="close-filters" style="display:none" aria-label="Cerrar filtros">
+            <i data-lucide="x" width="18" height="18"></i>
+          </button>
+        </div>
+
+        <!-- Categorías -->
+        <div class="filter-group">
+          <div class="filter-group-title">Categoría</div>
+          <div id="category-filters">
+            <!-- JS renderiza dinámicamente -->
+            <div class="filter-check">
+              <input type="checkbox" id="cat-all" name="category" value="" checked />
+              <label for="cat-all">Todas</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Precio -->
+        <div class="filter-group">
+          <div class="filter-group-title">Precio</div>
+          <div class="price-range-inputs">
+            <input
+              type="number"
+              class="price-input"
+              id="min-price"
+              placeholder="Mín $"
+              min="0"
+              aria-label="Precio mínimo"
+            />
+            <input
+              type="number"
+              class="price-input"
+              id="max-price"
+              placeholder="Máx $"
+              min="0"
+              aria-label="Precio máximo"
+            />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Disponibilidad -->
+        <div class="filter-group">
+          <div class="filter-group-title">Disponibilidad</div>
+          <label class="filter-check">
+            <input type="checkbox" id="filter-in-stock" name="stock" />
+            <span>Solo en stock</span>
+          </label>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-sm" id="apply-filters" style="margin-top:var(--space-4)">
+          Aplicar Filtros
+        </button>
+      </aside>
+
+      <!-- ── Products Area ───────────────────────────────────── -->
+      <section aria-label="Listado de productos">
+        <!-- Header con resultados y orden -->
+        <div class="catalog-header">
+          <p class="catalog-count" id="results-count" aria-live="polite">Cargando...</p>
+          <div style="display:flex;align-items:center;gap:var(--space-3);">
+            <label for="sort-select" class="sr-only">Ordenar por</label>
+            <select class="catalog-sort" id="sort-select" aria-label="Ordenar productos">
+              <option value="">Más recientes</option>
+              <option value="price_asc">Precio: menor a mayor</option>
+              <option value="price_desc">Precio: mayor a menor</option>
+              <option value="name_asc">Nombre A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Grid de productos -->
+        <div class="products-grid" id="products-grid" aria-label="Productos">
+          <!-- Skeletons iniciales -->
+          <div class="product-card-skeleton">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text-sm"></div>
+            <div class="skeleton skeleton-price"></div>
+          </div>
+          <div class="product-card-skeleton">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text-sm"></div>
+            <div class="skeleton skeleton-price"></div>
+          </div>
+          <div class="product-card-skeleton">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text-sm"></div>
+            <div class="skeleton skeleton-price"></div>
+          </div>
+          <div class="product-card-skeleton">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text-sm"></div>
+            <div class="skeleton skeleton-price"></div>
+          </div>
+        </div>
+
+        <!-- Paginación -->
+        <nav class="pagination" id="pagination" aria-label="Paginación" style="display:none"></nav>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ── Cart Drawer ──────────────────────────────────────────────── -->
+<div class="drawer-overlay" id="cart-overlay" role="dialog" aria-modal="true" aria-label="Carrito de compras">
+  <aside class="drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        Mi Carrito
+      </h2>
+      <button class="modal-close" id="cart-close" aria-label="Cerrar carrito">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+
+    <div class="drawer-body" id="cart-items">
+      <div class="drawer-empty">
+        <i data-lucide="shopping-cart" width="48" height="48"></i>
+        <p>Tu carrito está vacío</p>
+        <a href="/" class="btn btn-ghost btn-sm">Ver productos</a>
+      </div>
+    </div>
+
+    <div class="drawer-footer" id="cart-footer" style="display:none">
+      <div class="cart-summary-line">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">$0.00</span>
+      </div>
+      <div class="cart-summary-line">
+        <span>Envío</span>
+        <span>Calculado en checkout</span>
+      </div>
+      <div class="cart-summary-total">
+        <span>Total</span>
+        <span id="cart-total">$0.00</span>
+      </div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">
+        Proceder al Checkout
+        <i data-lucide="arrow-right" width="16" height="16"></i>
+      </a>
+    </div>
+  </aside>
+</div>
+
+<!-- ── Toast Container ─────────────────────────────────────────── -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ── Footer ──────────────────────────────────────────────────── -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo">⚙ MetalShop</a>
+        <p>Tu tienda de confianza para herramientas y equipamiento metálico de alta calidad industrial.</p>
+      </div>
+      <div>
+        <h3 class="footer-heading">Tienda</h3>
+        <ul class="footer-links">
+          <li><a href="/">Catálogo</a></li>
+          <li><a href="/cart.html">Carrito</a></li>
+          <li><a href="/orders.html">Mis Pedidos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="footer-heading">Ayuda</h3>
+        <ul class="footer-links">
+          <li><a href="#">Envíos</a></li>
+          <li><a href="#">Devoluciones</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MetalShop. Todos los derechos reservados.</p>
+      <p>Hecho con acero y código ⚙️</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/pages/catalog.js"></script>
+<script>
+  // Inicializar iconos Lucide
+  lucide.createIcons();
+</script>
+</body>
+</html>

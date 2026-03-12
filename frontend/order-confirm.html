@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido Confirmado — MetalShop</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    .confirm-page {
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+
+    .confirm-card {
+      background: var(--bg-card);
+      border: var(--border-gold);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-10) var(--space-8);
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-card), var(--gold-glow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Shimmer background */
+    .confirm-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212,175,55,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Animated check */
+    @keyframes pop-in {
+      0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+      60%  { transform: scale(1.15) rotate(3deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.4); }
+      50%       { box-shadow: 0 0 40px rgba(212,175,55,0.7), 0 0 80px rgba(212,175,55,0.2); }
+    }
+
+    .check-circle {
+      width: 100px;
+      height: 100px;
+      background: var(--gradient-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-6);
+      animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                 glow-pulse 2.5s ease-in-out 1s infinite;
+    }
+
+    .confirm-title {
+      font-family: var(--font-title);
+      font-size: clamp(var(--text-2xl), 5vw, var(--text-4xl));
+      font-weight: 700;
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--space-2);
+    }
+
+    .confirm-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+      font-size: var(--text-lg);
+    }
+
+    .order-number-box {
+      background: var(--bg-surface);
+      border: var(--border-gold);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4) var(--space-6);
+      margin: 0 auto var(--space-8);
+      display: inline-block;
+    }
+
+    .order-number-label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: var(--space-1);
+    }
+
+    .order-number-value {
+      font-family: var(--font-title);
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      color: var(--text-gold);
+      letter-spacing: 0.05em;
+    }
+
+    /* Steps */
+    .order-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+      margin-bottom: var(--space-8);
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--bg-surface);
+      border-radius: var(--border-radius);
+      border: var(--border-metal);
+    }
+
+    .step.active {
+      border-color: rgba(212,175,55,0.4);
+      background: rgba(212,175,55,0.05);
+    }
+
+    .step svg { color: var(--gold); }
+    .step:not(.active) svg { color: var(--text-muted); }
+    .step-label { font-size: var(--text-xs); color: var(--text-muted); text-align: center; }
+    .step.active .step-label { color: var(--text-secondary); }
+
+    /* Order detail */
+    .order-detail-box {
+      background: var(--bg-surface);
+      border: var(--border-metal);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-8);
+      text-align: left;
+    }
+
+    .order-detail-title {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      padding: var(--space-2) 0;
+      border-bottom: var(--border-metal);
+    }
+    .order-detail-row:last-child { border-bottom: none; }
+    .order-detail-row strong { color: var(--text-primary); }
+
+    .confirm-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    @media (min-width: 480px) {
+      .confirm-actions { flex-direction: row; justify-content: center; }
+    }
+
+    /* Confetti animation */
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .confetti-piece {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confetti-fall linear forwards;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">⚙ MetalShop</a>
+    <div class="nav-actions" style="margin-left:auto">
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrapper">
+  <div class="confirm-page">
+    <div class="confirm-card" id="confirm-card">
+
+      <!-- Loading state -->
+      <div id="confirm-loading">
+        <div class="skeleton" style="width:100px;height:100px;border-radius:50%;margin:0 auto var(--space-6)"></div>
+        <div class="skeleton" style="height:36px;width:70%;margin:0 auto var(--space-3)"></div>
+        <div class="skeleton" style="height:16px;width:50%;margin:0 auto"></div>
+      </div>
+
+      <!-- Content -->
+      <div id="confirm-content" class="hidden">
+        <!-- Icono check -->
+        <div class="check-circle" aria-hidden="true">
+          <i data-lucide="check" width="48" height="48" style="color:#1A1A2E;stroke-width:3"></i>
+        </div>
+
+        <h1 class="confirm-title">¡Pedido Confirmado!</h1>
+        <p class="confirm-subtitle">Tu pedido ha sido procesado exitosamente.</p>
+
+        <!-- Número de orden -->
+        <div class="order-number-box">
+          <div class="order-number-label">Número de Orden</div>
+          <div class="order-number-value" id="order-number">#0000</div>
+        </div>
+
+        <!-- Estado del pedido -->
+        <div class="order-steps" aria-label="Estado del pedido">
+          <div class="step active">
+            <i data-lucide="check-circle" width="20" height="20"></i>
+            <span class="step-label">Confirmado</span>
+          </div>
+          <div class="step">
+            <i data-lucide="package" width="20" height="20"></i>
+            <span class="step-label">Preparando</span>
+          </div>
+          <div class="step">
+            <i data-lucide="truck" width="20" height="20"></i>
+            <span class="step-label">En camino</span>
+          </div>
+        </div>
+
+        <!-- Detalle del pedido -->
+        <div class="order-detail-box" id="order-detail-box">
+          <div class="order-detail-title">Detalle del Pedido</div>
+          <div id="order-detail-rows"></div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="confirm-actions">
+          <a href="/orders.html" class="btn btn-primary">
+            <i data-lucide="package" width="16" height="16"></i>
+            Ver mis pedidos
+          </a>
+          <a href="/" class="btn btn-ghost">
+            <i data-lucide="shopping-bag" width="16" height="16"></i>
+            Seguir comprando
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+  lucide.createIcons();
+
+  // ── Confetti ────────────────────────────────────────────────────────────────
+  function launchConfetti() {
+    const colors = ['#D4AF37', '#C0C0C0', '#B87333', '#EDD56A', '#F0F0F0'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        top: -10px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        animation-duration: ${1.5 + Math.random() * 2}s;
+        animation-delay: ${Math.random() * 0.8}s;
+        transform: rotate(${Math.random() * 360}deg);
+      `;
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+  }
+
+  // ── Cargar detalle de la orden ──────────────────────────────────────────────
+  async function loadOrder() {
+    const params  = new URLSearchParams(location.search);
+    const orderId = params.get('order_id');
+
+    const $loading = document.getElementById('confirm-loading');
+    const $content = document.getElementById('confirm-content');
+
+    if (!orderId) {
+      $loading.innerHTML = `<p style="color:var(--text-error)">Orden no encontrada.</p>`;
+      return;
+    }
+
+    try {
+      const order = await api.get(`/orders/${orderId}`);
+
+      document.getElementById('order-number').textContent = `#${String(order.id).padStart(4, '0')}`;
+
+      // Detalle
+      const addr = order.shipping_address || {};
+      const rows = [
+        { label: 'Estado', value: getStatusLabel(order.status) },
+        { label: 'Fecha',  value: formatDate(order.created_at) },
+        { label: 'Total',  value: formatPrice(order.total) },
+        addr.full_name ? { label: 'Enviar a', value: `${addr.full_name}, ${addr.street}, ${addr.city}` } : null,
+      ].filter(Boolean);
+
+      document.getElementById('order-detail-rows').innerHTML = rows.map(r => `
+        <div class="order-detail-row">
+          <span>${r.label}</span>
+          <strong>${r.value}</strong>
+        </div>
+      `).join('');
+
+      $loading.classList.add('hidden');
+      $content.classList.remove('hidden');
+      lucide.createIcons({ elements: [$content] });
+      launchConfetti();
+
+    } catch {
+      $loading.innerHTML = `
+        <p style="color:var(--text-error);margin-bottom:var(--space-4)">No se pudo cargar el detalle de la orden.</p>
+        <a href="/" class="btn btn-ghost btn-sm">Volver al inicio</a>
+      `;
+    }
+  }
+
+  function getStatusLabel(status) {
+    const map = { pending: '⏳ Pendiente', shipped: '🚚 Enviado', delivered: '✅ Entregado', cancelled: '❌ Cancelado' };
+    return map[status] || status;
+  }
+
+  document.addEventListener('DOMContentLoaded', loadOrder);
+</script>
+</body>
+</html>

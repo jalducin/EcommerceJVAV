@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "metalshop"
+version = "0.1.0"
+description = "Ecommerce en Python con FastAPI y UI metálica"
+authors = ["jalducin"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+sqlalchemy = "^2.0.0"
+alembic = "^1.13.0"
+pydantic-settings = "^2.3.0"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.9"
+fastapi-mail = "^1.4.1"
+slowapi = "^0.1.9"
+aiosqlite = "^0.20.0"
+email-validator = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-asyncio = "^0.23.0"
+httpx = "^0.27.0"
+ruff = "^0.4.0"
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

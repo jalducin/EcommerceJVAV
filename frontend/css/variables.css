@@ -1,0 +1,125 @@
+/* ============================================================
+   MetalShop — Variables CSS (Tokens de Diseño Metálico)
+   ============================================================ */
+
+:root {
+  /* ── Paleta Metálica ───────────────────────────────────────── */
+  --silver:      #C0C0C0;
+  --gold:        #D4AF37;
+  --steel:       #4A5568;
+  --copper:      #B87333;
+  --chrome:      #E8E8E8;
+  --dark-metal:  #1A1A2E;
+
+  /* ── Variantes de Paleta ───────────────────────────────────── */
+  --steel-dark:   #2D3748;
+  --steel-mid:    #3A4A5C;
+  --steel-light:  #718096;
+  --gold-dark:    #A8892A;
+  --gold-light:   #EDD56A;
+  --silver-dark:  #909090;
+  --silver-light: #F0F0F0;
+  --copper-dark:  #8B5A2B;
+  --copper-light: #D4956A;
+  --dark-2:       #16213E;
+  --dark-3:       #0F3460;
+  --dark-4:       #1E2A4A;
+
+  /* ── Texto ─────────────────────────────────────────────────── */
+  --text-primary:   #E8E8E8;
+  --text-secondary: #A0AEC0;
+  --text-muted:     #718096;
+  --text-inverse:   #1A1A2E;
+  --text-gold:      #D4AF37;
+  --text-success:   #68D391;
+  --text-error:     #FC8181;
+  --text-warning:   #F6AD55;
+
+  /* ── Fondos ─────────────────────────────────────────────────── */
+  --bg-body:    #1A1A2E;
+  --bg-nav:     #0F1629;
+  --bg-card:    #1E2A4A;
+  --bg-surface: #16213E;
+  --bg-input:   #0F1629;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --bg-modal:   #16213E;
+
+  /* ── Bordes ─────────────────────────────────────────────────── */
+  --border-metal:  1px solid rgba(192, 192, 192, 0.15);
+  --border-gold:   1px solid rgba(212, 175, 55, 0.4);
+  --border-silver: 1px solid rgba(192, 192, 192, 0.3);
+  --border-glow:   1px solid rgba(212, 175, 55, 0.6);
+
+  /* ── Sombras con brillo metálico ───────────────────────────── */
+  --gold-glow:       0 0 12px rgba(212, 175, 55, 0.4);
+  --gold-glow-lg:    0 0 24px rgba(212, 175, 55, 0.5), 0 0 48px rgba(212, 175, 55, 0.2);
+  --silver-glow:     0 0 12px rgba(192, 192, 192, 0.3);
+  --silver-glow-lg:  0 0 24px rgba(192, 192, 192, 0.4);
+  --copper-glow:     0 0 12px rgba(184, 115, 51, 0.4);
+  --shadow-card:     0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.5), var(--silver-glow);
+  --shadow-btn:      0 2px 12px rgba(212, 175, 55, 0.3);
+  --shadow-nav:      0 2px 20px rgba(0, 0, 0, 0.5);
+
+  /* ── Gradientes metálicos ───────────────────────────────────── */
+  --gradient-gold:    linear-gradient(135deg, #A8892A 0%, #D4AF37 40%, #EDD56A 60%, #D4AF37 80%, #A8892A 100%);
+  --gradient-silver:  linear-gradient(135deg, #909090 0%, #C0C0C0 40%, #F0F0F0 60%, #C0C0C0 80%, #909090 100%);
+  --gradient-steel:   linear-gradient(135deg, #2D3748 0%, #4A5568 50%, #2D3748 100%);
+  --gradient-copper:  linear-gradient(135deg, #8B5A2B 0%, #B87333 50%, #D4956A 100%);
+  --gradient-dark:    linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+  --gradient-hero:    linear-gradient(135deg, #0F1629 0%, #1A1A2E 40%, #0F3460 100%);
+  --gradient-card:    linear-gradient(145deg, #1E2A4A 0%, #16213E 100%);
+  --gradient-nav:     linear-gradient(90deg, #0F1629 0%, #16213E 100%);
+  --gradient-btn-primary: linear-gradient(135deg, #A8892A 0%, #D4AF37 50%, #A8892A 100%);
+  --gradient-btn-secondary: linear-gradient(135deg, #2D3748 0%, #4A5568 50%, #2D3748 100%);
+
+  /* ── Tipografía ─────────────────────────────────────────────── */
+  --font-title: 'Rajdhani', sans-serif;
+  --font-body:  'Inter', sans-serif;
+
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+
+  /* ── Spacing ────────────────────────────────────────────────── */
+  --space-1:  0.25rem;   /* 4px  */
+  --space-2:  0.5rem;    /* 8px  */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* ── Layout ─────────────────────────────────────────────────── */
+  --nav-height:      64px;
+  --sidebar-width:   260px;
+  --container-max:   1280px;
+  --border-radius:   8px;
+  --border-radius-sm: 4px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+
+  /* ── Transiciones ───────────────────────────────────────────── */
+  --transition-fast:   150ms ease;
+  --transition:        250ms ease;
+  --transition-slow:   350ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Z-Index ────────────────────────────────────────────────── */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-nav:     100;
+  --z-drawer:  200;
+  --z-modal:   300;
+  --z-toast:   400;
+}

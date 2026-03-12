@@ -8,88 +8,88 @@
 ## FASE 1 — Setup y Base (Días 1-2)
 
 ### Entorno
-- [ ] Inicializar proyecto con `poetry init` y definir dependencias base
-- [ ] Configurar `pyproject.toml` con Ruff (linting + formato)
-- [ ] Crear `docker-compose.yml` con servicios: app, postgres
-- [ ] Crear `Dockerfile` multi-stage (dev + prod)
-- [ ] Configurar `.env.example` con todas las variables necesarias
-- [ ] Inicializar repositorio Git con `.gitignore` apropiado
+- [x] Inicializar proyecto con `poetry init` y definir dependencias base
+- [x] Configurar `pyproject.toml` con Ruff (linting + formato)
+- [x] Crear `docker-compose.yml` con servicios: app, postgres
+- [x] Crear `Dockerfile` multi-stage (dev + prod)
+- [x] Configurar `.env.example` con todas las variables necesarias
+- [x] Inicializar repositorio Git con `.gitignore` apropiado
 
 ### Backend Base
-- [ ] Crear instancia FastAPI en `main.py` con metadata (título, versión, docs)
-- [ ] Configurar `config.py` con pydantic-settings (lectura de `.env`)
-- [ ] Configurar `database.py`: engine, SessionLocal, Base declarativa
-- [ ] Crear `dependencies.py`: `get_db()` session injector
-- [ ] Inicializar Alembic (`alembic init alembic`)
-- [ ] Configurar `alembic/env.py` para leer `DATABASE_URL` del entorno
+- [x] Crear instancia FastAPI en `main.py` con metadata (título, versión, docs)
+- [x] Configurar `config.py` con pydantic-settings (lectura de `.env`)
+- [x] Configurar `database.py`: engine, SessionLocal, Base declarativa
+- [x] Crear `dependencies.py`: `get_db()` session injector
+- [x] Inicializar Alembic (`alembic init alembic`)
+- [x] Configurar `alembic/env.py` para leer `DATABASE_URL` del entorno
 
 ---
 
 ## FASE 2 — Modelos y Auth (Días 3-4)
 
 ### Modelos SQLAlchemy
-- [ ] Modelo `User`: id, email, hashed_password, full_name, role, created_at, is_active
-- [ ] Modelo `Product`: id, name, description, price, stock, category, images, is_active
-- [ ] Modelo `Order` + `OrderItem`: relación one-to-many
-- [ ] Modelo `CartItem`: user_id + product_id + quantity
+- [x] Modelo `User`: id, email, hashed_password, full_name, role, created_at, is_active
+- [x] Modelo `Product`: id, name, description, price, stock, category, images, is_active
+- [x] Modelo `Order` + `OrderItem`: relación one-to-many
+- [x] Modelo `CartItem`: user_id + product_id + quantity
 - [ ] Crear y ejecutar migración inicial con Alembic
 
 ### Autenticación
-- [ ] Schemas Pydantic: `UserCreate`, `UserLogin`, `UserResponse`, `Token`
-- [ ] Utilidades en `utils/security.py`: hash password, verify password, create JWT, decode JWT
-- [ ] Endpoint `POST /api/auth/register` con validación de email único
-- [ ] Endpoint `POST /api/auth/login` → devuelve access + refresh token
-- [ ] Endpoint `POST /api/auth/refresh` → renueva access token
-- [ ] Dependency `get_current_user` para rutas protegidas
-- [ ] Dependency `require_admin` para rutas de admin
-- [ ] Tests unitarios: registro, login, token inválido, token expirado
+- [x] Schemas Pydantic: `UserCreate`, `UserLogin`, `UserResponse`, `Token`
+- [x] Utilidades en `utils/security.py`: hash password, verify password, create JWT, decode JWT
+- [x] Endpoint `POST /api/auth/register` con validación de email único
+- [x] Endpoint `POST /api/auth/login` → devuelve access + refresh token
+- [x] Endpoint `POST /api/auth/refresh` → renueva access token
+- [x] Dependency `get_current_user` para rutas protegidas
+- [x] Dependency `require_admin` para rutas de admin
+- [x] Tests unitarios: registro, login, token inválido, token expirado
 
 ---
 
 ## FASE 3 — Productos y Catálogo (Días 5-6)
 
 ### Backend
-- [ ] Schemas: `ProductCreate`, `ProductUpdate`, `ProductResponse`, `ProductList`
-- [ ] `GET /api/products`: paginación (limit/offset), filtro por categoría, búsqueda por nombre, filtro por precio min/max
-- [ ] `GET /api/products/{id}`: detalle con stock actual
-- [ ] `POST /api/products`: solo admin, validar precio > 0, stock >= 0
-- [ ] `PUT /api/products/{id}`: solo admin, actualización parcial
-- [ ] `DELETE /api/products/{id}`: soft delete (is_active = False)
-- [ ] Script seed: `seed_products.py` con 20 productos de ejemplo
+- [x] Schemas: `ProductCreate`, `ProductUpdate`, `ProductResponse`, `ProductList`
+- [x] `GET /api/products`: paginación (limit/offset), filtro por categoría, búsqueda por nombre, filtro por precio min/max
+- [x] `GET /api/products/{id}`: detalle con stock actual
+- [x] `POST /api/products`: solo admin, validar precio > 0, stock >= 0
+- [x] `PUT /api/products/{id}`: solo admin, actualización parcial
+- [x] `DELETE /api/products/{id}`: soft delete (is_active = False)
+- [x] Script seed: `seed_products.py` con 20 productos de ejemplo
 
 ### Frontend — Catálogo
-- [ ] Crear `css/variables.css` con todos los tokens metálicos (colores, sombras, gradientes)
-- [ ] Crear `css/base.css`: reset, tipografía Rajdhani + Inter, layout base
-- [ ] Crear `css/components.css`: card, button, badge, input, modal, drawer
-- [ ] Diseñar y construir `index.html`: navbar + hero + grid de productos + filtros sidebar
-- [ ] `js/api.js`: wrapper de fetch con base URL, headers de auth, manejo de errores
-- [ ] `js/pages/catalog.js`: cargar productos, filtros reactivos, búsqueda con debounce
-- [ ] Diseñar y construir `product.html`: galería, descripción, botón agregar al carrito
-- [ ] Animaciones CSS: hover cards (elevación + brillo metálico), loading skeleton
+- [x] Crear `css/variables.css` con todos los tokens metálicos (colores, sombras, gradientes)
+- [x] Crear `css/base.css`: reset, tipografía Rajdhani + Inter, layout base
+- [x] Crear `css/components.css`: card, button, badge, input, modal, drawer
+- [x] Diseñar y construir `index.html`: navbar + hero + grid de productos + filtros sidebar
+- [x] `js/api.js`: wrapper de fetch con base URL, headers de auth, manejo de errores
+- [x] `js/pages/catalog.js`: cargar productos, filtros reactivos, búsqueda con debounce
+- [x] Diseñar y construir `product.html`: galería, descripción, botón agregar al carrito
+- [x] Animaciones CSS: hover cards (elevación + brillo metálico), loading skeleton
 
 ---
 
 ## FASE 4 — Carrito y Checkout (Días 7-8)
 
 ### Backend
-- [ ] Schemas: `CartItemCreate`, `CartItemUpdate`, `CartResponse`
-- [ ] `GET /api/cart`: devuelve items + totales calculados
-- [ ] `POST /api/cart/items`: agregar producto (merge si ya existe)
-- [ ] `PUT /api/cart/items/{id}`: actualizar cantidad
-- [ ] `DELETE /api/cart/items/{id}`: eliminar item
-- [ ] Sincronización carrito: endpoint `POST /api/cart/sync` (localStorage → DB al hacer login)
-- [ ] Schemas Order: `CheckoutRequest`, `OrderResponse`, `OrderDetail`
-- [ ] `POST /api/orders/checkout`: validar stock, crear orden, descontar inventario, respuesta con order_id
-- [ ] `GET /api/orders`: historial del usuario autenticado
-- [ ] `GET /api/orders/{id}`: detalle con items
+- [x] Schemas: `CartItemCreate`, `CartItemUpdate`, `CartResponse`
+- [x] `GET /api/cart`: devuelve items + totales calculados
+- [x] `POST /api/cart/items`: agregar producto (merge si ya existe)
+- [x] `PUT /api/cart/items/{id}`: actualizar cantidad
+- [x] `DELETE /api/cart/items/{id}`: eliminar item
+- [x] Sincronización carrito: endpoint `POST /api/cart/sync` (localStorage → DB al hacer login)
+- [x] Schemas Order: `CheckoutRequest`, `OrderResponse`, `OrderDetail`
+- [x] `POST /api/orders/checkout`: validar stock, crear orden, descontar inventario, respuesta con order_id
+- [x] `GET /api/orders`: historial del usuario autenticado
+- [x] `GET /api/orders/{id}`: detalle con items
 
 ### Frontend
-- [ ] `js/cart.js`: CRUD carrito con localStorage (visitante) y API (autenticado)
-- [ ] Side drawer carrito: animación slide-in, lista de items, subtotal, botón checkout
-- [ ] `cart.html`: página completa del carrito con resumen de precios
-- [ ] `checkout.html`: formulario dirección + selección pago + resumen final
-- [ ] `js/pages/checkout.js`: validación formulario, POST a API, redirect a confirmación
-- [ ] Página de confirmación de pedido con número de orden y animación de éxito
+- [x] `js/cart.js`: CRUD carrito con localStorage (visitante) y API (autenticado)
+- [x] Side drawer carrito: animación slide-in, lista de items, subtotal, botón checkout
+- [x] `cart.html`: página completa del carrito con resumen de precios
+- [x] `checkout.html`: formulario dirección + selección pago + resumen final
+- [x] `js/pages/checkout.js`: validación formulario, POST a API, redirect a confirmación
+- [x] Página de confirmación de pedido con número de orden y animación de éxito
 
 ---
 

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — MetalShop</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <style>
+    .checkout-page { padding: var(--space-10) 0 var(--space-16); }
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+    @media (min-width: 768px) {
+      .checkout-layout { grid-template-columns: 1fr 380px; }
+    }
+
+    .checkout-card {
+      background: var(--bg-card);
+      border: var(--border-metal);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+    .checkout-section-title {
+      font-family: var(--font-title);
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--text-gold);
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    .form-grid-2 .full { grid-column: 1 / -1; }
+
+    /* Payment cards */
+    .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .payment-card {
+      position: relative;
+      cursor: pointer;
+    }
+    .payment-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .payment-card-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      background: var(--bg-surface);
+      border: 2px solid rgba(192,192,192,0.15);
+      border-radius: var(--border-radius-lg);
+      transition: border-color var(--transition), background var(--transition);
+      cursor: pointer;
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    .payment-card input:checked + .payment-card-label {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.08);
+      color: var(--text-gold);
+    }
+    .payment-card-label svg { color: var(--text-muted); }
+    .payment-card input:checked + .payment-card-label svg { color: var(--gold); }
+
+    /* Order summary */
+    .order-summary {
+      background: var(--bg-card);
+      border: var(--border-gold);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: calc(var(--nav-height) + var(--space-4));
+    }
+    .summary-title {
+      font-family: var(--font-title);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-5);
+    }
+    .checkout-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: var(--border-metal);
+    }
+    .checkout-item:last-of-type { border-bottom: none; }
+    .checkout-item-img {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--border-radius);
+      object-fit: cover;
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+    .checkout-item-name { font-size: var(--text-sm); flex: 1; }
+    .checkout-item-price {
+      font-family: var(--font-title);
+      font-weight: 600;
+      font-size: var(--text-sm);
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .summary-row { display: flex; justify-content: space-between; font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-3); }
+    .summary-total { display: flex; justify-content: space-between; font-family: var(--font-title); font-size: var(--text-2xl); font-weight: 700; padding-top: var(--space-4); margin-top: var(--space-4); border-top: var(--border-gold); }
+    .summary-total span:last-child { background: var(--gradient-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* Error de campo */
+    .field-error { display: none; font-size: var(--text-xs); color: var(--text-error); margin-top: var(--space-1); }
+    .field-error.show { display: block; }
+    .form-input.invalid { border-color: rgba(252,129,129,0.5); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">⚙ MetalShop</a>
+    <div class="nav-actions" style="margin-left:auto">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrapper">
+  <div class="container">
+    <div class="checkout-page">
+
+      <div style="margin-bottom:var(--space-8)">
+        <nav style="font-size:var(--text-sm);color:var(--text-muted);margin-bottom:var(--space-2)">
+          <a href="/" style="color:var(--text-muted)">Inicio</a> › <a href="/cart.html" style="color:var(--text-muted)">Carrito</a> › <span>Checkout</span>
+        </nav>
+        <h1 style="font-family:var(--font-title);font-size:var(--text-3xl)">Finalizar Pedido</h1>
+      </div>
+
+      <!-- Empty cart guard -->
+      <div id="checkout-empty" class="hidden" style="text-align:center;padding:var(--space-16)">
+        <i data-lucide="shopping-cart" width="64" height="64" style="margin:0 auto var(--space-4);opacity:0.3;display:block"></i>
+        <h2 style="font-family:var(--font-title);margin-bottom:var(--space-2)">Tu carrito está vacío</h2>
+        <a href="/" class="btn btn-primary">Ver Catálogo</a>
+      </div>
+
+      <form id="checkout-form" novalidate>
+        <div class="checkout-layout">
+
+          <!-- Left: Form -->
+          <div>
+            <!-- Dirección de envío -->
+            <div class="checkout-card">
+              <h2 class="checkout-section-title">
+                <i data-lucide="map-pin" width="18" height="18"></i>
+                Dirección de Envío
+              </h2>
+              <div class="form-grid-2">
+                <div class="form-group full">
+                  <label class="form-label required" for="full_name">Nombre completo</label>
+                  <input class="form-input" type="text" id="full_name" name="full_name" autocomplete="name" placeholder="Juan García López" required />
+                  <span class="field-error" id="err-full_name">Nombre requerido</span>
+                </div>
+                <div class="form-group full">
+                  <label class="form-label required" for="street">Calle y número</label>
+                  <input class="form-input" type="text" id="street" name="street" autocomplete="street-address" placeholder="Av. Industrial 1234, Col. Centro" required />
+                  <span class="field-error" id="err-street">Dirección requerida</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="city">Ciudad</label>
+                  <input class="form-input" type="text" id="city" name="city" autocomplete="address-level2" placeholder="Ciudad de México" required />
+                  <span class="field-error" id="err-city">Ciudad requerida</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="state">Estado</label>
+                  <input class="form-input" type="text" id="state" name="state" autocomplete="address-level1" placeholder="CDMX" required />
+                  <span class="field-error" id="err-state">Estado requerido</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="postal_code">Código postal</label>
+                  <input class="form-input" type="text" id="postal_code" name="postal_code" autocomplete="postal-code" placeholder="06600" maxlength="10" required />
+                  <span class="field-error" id="err-postal_code">CP requerido</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="phone">Teléfono</label>
+                  <input class="form-input" type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+52 55 1234 5678" required />
+                  <span class="field-error" id="err-phone">Teléfono requerido</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Método de pago -->
+            <div class="checkout-card">
+              <h2 class="checkout-section-title">
+                <i data-lucide="credit-card" width="18" height="18"></i>
+                Método de Pago
+              </h2>
+              <div class="payment-options">
+                <label class="payment-card">
+                  <input type="radio" name="payment_method" value="card" checked />
+                  <div class="payment-card-label">
+                    <i data-lucide="credit-card" width="28" height="28"></i>
+                    <span>Tarjeta</span>
+                    <span style="font-size:var(--text-xs);color:var(--text-muted)">Simulado</span>
+                  </div>
+                </label>
+                <label class="payment-card">
+                  <input type="radio" name="payment_method" value="cash" />
+                  <div class="payment-card-label">
+                    <i data-lucide="banknote" width="28" height="28"></i>
+                    <span>Efectivo</span>
+                    <span style="font-size:var(--text-xs);color:var(--text-muted)">Contra entrega</span>
+                  </div>
+                </label>
+              </div>
+              <div style="margin-top:var(--space-4);padding:var(--space-3);background:rgba(212,175,55,0.05);border:var(--border-gold);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--text-muted);display:flex;gap:var(--space-2)">
+                <i data-lucide="info" width="14" height="14" style="flex-shrink:0;color:var(--gold);margin-top:1px"></i>
+                MetalShop v1 opera en modo simulado. No se realizarán cargos reales.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Order summary -->
+          <div>
+            <div class="order-summary">
+              <h2 class="summary-title">
+                <i data-lucide="receipt" width="18" height="18" style="color:var(--gold);margin-right:var(--space-1)"></i>
+                Tu Pedido
+              </h2>
+
+              <div id="checkout-items-list"></div>
+
+              <div class="summary-row"><span>Subtotal</span><span id="co-subtotal">$0.00</span></div>
+              <div class="summary-row"><span>Envío</span><span style="color:var(--text-success)">Gratis</span></div>
+              <div class="summary-total">
+                <span>Total</span>
+                <span id="co-total">$0.00</span>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" style="margin-top:var(--space-5);padding:var(--space-4)" id="place-order-btn">
+                <i data-lucide="shield-check" width="18" height="18"></i>
+                Confirmar Pedido
+              </button>
+
+              <p style="text-align:center;font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-3)">
+                Al confirmar aceptas los términos y condiciones de MetalShop.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- Cart Drawer -->
+<div class="drawer-overlay" id="cart-overlay" role="dialog" aria-modal="true">
+  <aside class="drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title"><i data-lucide="shopping-cart" width="20" height="20"></i> Mi Carrito</h2>
+      <button class="modal-close" id="cart-close"><i data-lucide="x" width="20" height="20"></i></button>
+    </div>
+    <div class="drawer-body" id="cart-items"></div>
+    <div class="drawer-footer" id="cart-footer" style="display:none">
+      <div class="cart-summary-line"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="cart-summary-total"><span>Total</span><span id="cart-total">$0.00</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i data-lucide="arrow-right" width="16" height="16"></i></a>
+    </div>
+  </aside>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/pages/checkout.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

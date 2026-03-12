@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Detalle de producto — MetalShop" />
+  <title>Producto — MetalShop</title>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+
+  <style>
+    /* ── Product Detail Layout ── */
+    .product-detail {
+      padding: var(--space-10) 0;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-8);
+    }
+
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-gold); }
+    .breadcrumb .sep { color: var(--steel-light); }
+    .breadcrumb .current { color: var(--text-secondary); }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-10);
+    }
+
+    @media (min-width: 768px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ── Gallery ── */
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .gallery-main {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: var(--bg-card);
+      border: var(--border-metal);
+      border-radius: var(--border-radius-xl);
+      overflow: hidden;
+    }
+
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-slow);
+    }
+
+    .gallery-main:hover img { transform: scale(1.04); }
+
+    .gallery-badge-overlay {
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .gallery-thumbnails {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color var(--transition-fast);
+      flex-shrink: 0;
+      background: var(--bg-card);
+    }
+
+    .thumb:hover,
+    .thumb.active { border-color: var(--gold); }
+
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Product Info ── */
+    .product-info { display: flex; flex-direction: column; gap: var(--space-5); }
+
+    .product-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .product-name {
+      font-family: var(--font-title);
+      font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text-primary);
+    }
+
+    .product-price-block {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding: var(--space-4) 0;
+      border-top: var(--border-metal);
+      border-bottom: var(--border-metal);
+    }
+
+    .product-price {
+      font-family: var(--font-title);
+      font-size: var(--text-4xl);
+      font-weight: 700;
+      background: var(--gradient-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .product-price-note {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .product-description {
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+      line-height: 1.8;
+    }
+
+    /* Stock indicator */
+    .stock-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+    }
+
+    .stock-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stock-dot.in  { background: var(--text-success); box-shadow: 0 0 6px rgba(104,211,145,0.6); }
+    .stock-dot.low { background: var(--text-warning);  box-shadow: 0 0 6px rgba(246,173,85,0.6); }
+    .stock-dot.out { background: var(--text-error);   box-shadow: 0 0 6px rgba(252,129,129,0.6); }
+
+    /* Add to cart section */
+    .add-to-cart-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .qty-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      min-width: 72px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: var(--border-metal);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .qty-controls button {
+      width: 40px;
+      height: 40px;
+      background: var(--steel-dark);
+      color: var(--text-primary);
+      font-size: var(--text-xl);
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition-fast);
+      border: none;
+      cursor: pointer;
+    }
+
+    .qty-controls button:hover { background: var(--steel); }
+
+    .qty-controls input {
+      width: 56px;
+      height: 40px;
+      text-align: center;
+      background: var(--bg-input);
+      border: none;
+      border-left: var(--border-metal);
+      border-right: var(--border-metal);
+      color: var(--text-primary);
+      font-size: var(--text-base);
+      font-weight: 600;
+      outline: none;
+    }
+
+    .cart-actions {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .cart-actions .btn-primary { flex: 1; padding: var(--space-4); font-size: var(--text-base); }
+
+    /* Product meta */
+    .product-meta {
+      padding: var(--space-4);
+      background: var(--bg-card);
+      border: var(--border-metal);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+    }
+
+    .meta-row svg { color: var(--gold); flex-shrink: 0; }
+    .meta-row span { color: var(--text-secondary); }
+
+    /* ── Loading skeleton ── */
+    .product-skeleton-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-10);
+    }
+
+    @media (min-width: 768px) {
+      .product-skeleton-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────────────── -->
+<nav class="navbar" role="navigation" aria-label="Navegación principal">
+  <div class="container">
+    <a href="/" class="nav-logo">⚙ MetalShop</a>
+    <div class="nav-search" id="nav-search">
+      <span class="nav-search-icon"><i data-lucide="search" width="16" height="16"></i></span>
+      <input type="search" id="nav-search-input" placeholder="Buscar productos..." autocomplete="off" aria-label="Buscar" />
+    </div>
+    <div class="nav-actions">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle" aria-label="Abrir carrito">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Product Detail ───────────────────────────────────────────── -->
+<main class="page-wrapper">
+  <div class="container">
+    <section class="product-detail" id="product-container">
+
+      <!-- Loading state -->
+      <div id="product-loading">
+        <div class="skeleton" style="height:16px;width:200px;margin-bottom:var(--space-8)"></div>
+        <div class="product-skeleton-grid">
+          <div class="skeleton" style="aspect-ratio:4/3;border-radius:var(--border-radius-xl)"></div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <div class="skeleton" style="height:12px;width:100px"></div>
+            <div class="skeleton" style="height:36px"></div>
+            <div class="skeleton" style="height:36px;width:60%"></div>
+            <div class="skeleton" style="height:80px;margin-top:var(--space-4)"></div>
+            <div class="skeleton" style="height:48px;margin-top:var(--space-4)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content (JS rellena) -->
+      <div id="product-content" class="hidden"></div>
+
+      <!-- Error state -->
+      <div id="product-error" class="hidden" style="text-align:center;padding:var(--space-16)">
+        <i data-lucide="alert-triangle" width="48" height="48" style="margin:0 auto var(--space-4);color:var(--text-error);opacity:0.6;display:block"></i>
+        <h2 style="font-family:var(--font-title);color:var(--text-secondary);margin-bottom:var(--space-2)">Producto no encontrado</h2>
+        <p style="color:var(--text-muted);margin-bottom:var(--space-6)">El producto que buscas no existe o fue eliminado.</p>
+        <a href="/" class="btn btn-primary">Ver Catálogo</a>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- ── Cart Drawer ──────────────────────────────────────────────── -->
+<div class="drawer-overlay" id="cart-overlay" role="dialog" aria-modal="true" aria-label="Carrito">
+  <aside class="drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title"><i data-lucide="shopping-cart" width="20" height="20"></i> Mi Carrito</h2>
+      <button class="modal-close" id="cart-close" aria-label="Cerrar carrito">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+    <div class="drawer-body" id="cart-items">
+      <div class="drawer-empty">
+        <i data-lucide="shopping-cart" width="48" height="48"></i>
+        <p>Tu carrito está vacío</p>
+      </div>
+    </div>
+    <div class="drawer-footer" id="cart-footer" style="display:none">
+      <div class="cart-summary-line"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="cart-summary-total"><span>Total</span><span id="cart-total">$0.00</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block">
+        Proceder al Checkout <i data-lucide="arrow-right" width="16" height="16"></i>
+      </a>
+    </div>
+  </aside>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ── Footer ──────────────────────────────────────────────────── -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo">⚙ MetalShop</a>
+        <p>Tu tienda de confianza para equipamiento metálico de alta calidad industrial.</p>
+      </div>
+      <div>
+        <h3 class="footer-heading">Tienda</h3>
+        <ul class="footer-links">
+          <li><a href="/">Catálogo</a></li>
+          <li><a href="/cart.html">Carrito</a></li>
+          <li><a href="/orders.html">Mis Pedidos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="footer-heading">Ayuda</h3>
+        <ul class="footer-links">
+          <li><a href="#">Envíos</a></li>
+          <li><a href="#">Devoluciones</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MetalShop. Todos los derechos reservados.</p>
+      <p>Hecho con acero y código ⚙️</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/pages/product.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

@@ -42,6 +42,3 @@ htmlcov/
 
 # Ruff
 .ruff_cache/
-
-# Docker
-.docker/
