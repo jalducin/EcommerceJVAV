@@ -83,3 +83,26 @@
 - Imágenes: máximo 5MB por producto, formatos JPG/PNG/WebP
 - Compatible con Chrome, Firefox, Safari (últimas 2 versiones)
 - Responsive: mobile-first (breakpoints 375px, 768px, 1280px)
+
+---
+
+## 6. Calidad y Entrega
+
+### Requisitos de calidad (no negociables)
+- **Linting:** `ruff check .` debe pasar sin errores antes de cada commit
+- **Tests:** `pytest` debe pasar con SQLite in-memory (sin BD externa)
+- **CI:** Pipeline de GitHub Actions valida lint + tests en cada PR
+
+### Entregables completados (v1)
+| Módulo | Estado |
+|---|---|
+| Setup + Docker + Alembic | Implementado |
+| Auth JWT (register / login / refresh) | Implementado |
+| Catálogo con filtros y búsqueda | Implementado |
+| Carrito dual (localStorage / BD) | Implementado |
+| Checkout + confirmación de pedido | Implementado |
+| Auth frontend + historial de pedidos | Implementado |
+| Panel admin (dashboard / productos / pedidos) | Implementado |
+| Email de confirmación + rate limiting | Implementado |
+| Suite de tests (5 módulos) + CI | Implementado |
+| Deploy con Docker multi-stage | Implementado |

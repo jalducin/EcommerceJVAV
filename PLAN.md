@@ -175,3 +175,25 @@ SMTP_USER=noreply@metalshop.com
 SMTP_PASSWORD=<app-password>
 ENVIRONMENT=development
 ```
+
+---
+
+## 7. CI/CD
+
+### Pipeline GitHub Actions (`.github/workflows/ci.yml`)
+
+Se ejecuta en cada push a `main`/`develop` y en pull requests:
+
+1. Checkout + Python 3.11 + Poetry (con caché de dependencias)
+2. `ruff check .` — linting y formato
+3. `pytest -v --tb=short` — suite completa con SQLite in-memory
+
+### Estrategia de deploy
+
+| Entorno | Servidor | BD | Config |
+|---|---|---|---|
+| **Dev local** | `uvicorn --reload` | SQLite | `.env` con defaults |
+| **Docker local** | `uvicorn` (stage dev) | PostgreSQL via Compose | `.env` personalizado |
+| **Producción** | Gunicorn + 4 UvicornWorkers | PostgreSQL | Variables de entorno del servidor |
+
+El frontend se sirve como archivos estáticos desde FastAPI (`StaticFiles` montado en `/`), eliminando la necesidad de un servidor web separado (nginx) para el frontend en despliegues simples.
