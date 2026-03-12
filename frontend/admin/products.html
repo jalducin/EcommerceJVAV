@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos — MetalShop Admin</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">
+  <i data-lucide="menu" width="20" height="20"></i>
+</button>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-logo">
+      <a href="/admin/dashboard.html">⚙ MetalShop</a>
+      <span class="sidebar-badge">Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="/admin/dashboard.html" class="sidebar-link">
+        <i data-lucide="layout-dashboard" width="16" height="16"></i> Dashboard
+      </a>
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Gestión</div>
+      <a href="/admin/products.html" class="sidebar-link active">
+        <i data-lucide="package" width="16" height="16"></i> Productos
+      </a>
+      <a href="/admin/orders.html" class="sidebar-link">
+        <i data-lucide="shopping-bag" width="16" height="16"></i> Pedidos
+      </a>
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Tienda</div>
+      <a href="/" class="sidebar-link" target="_blank">
+        <i data-lucide="store" width="16" height="16"></i> Ver tienda
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <i data-lucide="user-circle" width="32" height="32" style="color:var(--gold);flex-shrink:0"></i>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="admin-name">Admin</div>
+          <div class="sidebar-user-role">Administrador</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" id="admin-logout" style="color:var(--text-error);border-color:rgba(252,129,129,0.2)">
+        <i data-lucide="log-out" width="14" height="14"></i> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <h1>Productos</h1>
+      <div class="admin-topbar-actions">
+        <button class="btn btn-primary btn-sm" id="btn-new-product">
+          <i data-lucide="plus" width="14" height="14"></i>
+          Nuevo Producto
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <span class="admin-table-title">Catálogo</span>
+          <div class="table-search-wrap">
+            <input type="search" class="table-search" id="product-search" placeholder="Buscar producto..." aria-label="Buscar" />
+            <select class="table-filter-select" id="product-filter-status" aria-label="Filtrar por estado">
+              <option value="">Todos</option>
+              <option value="active">Activos</option>
+              <option value="inactive">Inactivos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table" id="products-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              <tr><td colspan="7" class="table-empty">
+                <i data-lucide="loader" width="24" height="24" style="margin:0 auto var(--space-2);display:block"></i>
+                <p>Cargando productos...</p>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-pagination" id="products-pagination"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ── Modal Crear/Editar Producto ──────────────────────────────── -->
+<div class="modal-overlay admin-modal" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-product-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-product-title">Nuevo Producto</h2>
+      <button class="modal-close" id="close-product-modal" aria-label="Cerrar">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="product-form" novalidate>
+        <input type="hidden" id="product-id" />
+        <div class="form-grid-2">
+          <div class="form-group full">
+            <label class="form-label required" for="p-name">Nombre</label>
+            <input class="form-input" type="text" id="p-name" required placeholder="Nombre del producto" />
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="p-description">Descripción</label>
+            <textarea class="form-input" id="p-description" rows="3" placeholder="Descripción del producto..." style="resize:vertical"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="p-price">Precio ($)</label>
+            <input class="form-input" type="number" id="p-price" step="0.01" min="0.01" required placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="p-stock">Stock</label>
+            <input class="form-input" type="number" id="p-stock" min="0" required placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="p-category">Categoría</label>
+            <select class="form-input" id="p-category">
+              <option value="">Sin categoría</option>
+              <option>Herramientas</option>
+              <option>Protección</option>
+              <option>Seguridad</option>
+              <option>Cuchillería</option>
+              <option>Navegación</option>
+              <option>Iluminación</option>
+              <option>Accesorios</option>
+              <option>Escalada</option>
+              <option>Supervivencia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="p-active">Estado</label>
+            <select class="form-input" id="p-active">
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="p-images">URL de imagen</label>
+            <input class="form-input" type="url" id="p-images" placeholder="https://ejemplo.com/imagen.jpg" />
+            <span style="font-size:var(--text-xs);color:var(--text-muted);margin-top:4px;display:block">URL de la imagen principal del producto</span>
+          </div>
+        </div>
+
+        <div class="auth-error" id="product-form-error" style="margin-top:var(--space-3)">
+          <i data-lucide="alert-circle" width="14" height="14"></i>
+          <span id="product-form-error-msg"></span>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancel-product-modal">Cancelar</button>
+      <button class="btn btn-primary" id="save-product-btn">
+        <i data-lucide="save" width="14" height="14"></i>
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Confirmar Eliminación ──────────────────────────────── -->
+<div class="modal-overlay" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="delete-title">Desactivar Producto</h2>
+      <button class="modal-close" id="close-delete-modal" aria-label="Cerrar">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-dialog">
+        <div class="warning-icon">
+          <i data-lucide="alert-triangle" width="24" height="24"></i>
+        </div>
+        <p style="font-size:var(--text-base);color:var(--text-secondary);margin-bottom:var(--space-2)">
+          ¿Desactivar <strong id="delete-product-name" style="color:var(--text-primary)"></strong>?
+        </p>
+        <p style="font-size:var(--text-sm);color:var(--text-muted)">
+          El producto dejará de aparecer en el catálogo. Puedes reactivarlo en cualquier momento.
+        </p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancel-delete-modal">Cancelar</button>
+      <button class="btn btn-sm" id="confirm-delete-btn" style="background:rgba(252,129,129,0.15);color:var(--text-error);border:1px solid rgba(252,129,129,0.3)">
+        <i data-lucide="trash-2" width="14" height="14"></i>
+        Desactivar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin/products.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

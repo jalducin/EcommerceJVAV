@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .database import create_tables
+from .routers import admin as admin_router
 from .routers import auth as auth_router
 from .routers import cart as cart_router
 from .routers import orders as orders_router
@@ -41,6 +42,7 @@ app.include_router(auth_router.router)
 app.include_router(products_router.router)
 app.include_router(cart_router.router)
 app.include_router(orders_router.router)
+app.include_router(admin_router.router)
 
 # Servir frontend como archivos estáticos (al final para no interceptar /api/*)
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

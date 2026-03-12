@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — MetalShop Admin</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">
+  <i data-lucide="menu" width="20" height="20"></i>
+</button>
+
+<div class="admin-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────── -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-logo">
+      <a href="/admin/dashboard.html">⚙ MetalShop</a>
+      <span class="sidebar-badge">Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="/admin/dashboard.html" class="sidebar-link active">
+        <i data-lucide="layout-dashboard" width="16" height="16"></i>
+        Dashboard
+      </a>
+
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Gestión</div>
+      <a href="/admin/products.html" class="sidebar-link">
+        <i data-lucide="package" width="16" height="16"></i>
+        Productos
+      </a>
+      <a href="/admin/orders.html" class="sidebar-link">
+        <i data-lucide="shopping-bag" width="16" height="16"></i>
+        Pedidos
+        <span class="badge-count" id="pending-count" style="display:none">0</span>
+      </a>
+
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Tienda</div>
+      <a href="/" class="sidebar-link" target="_blank">
+        <i data-lucide="store" width="16" height="16"></i>
+        Ver tienda
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <i data-lucide="user-circle" width="32" height="32" style="color:var(--gold);flex-shrink:0"></i>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="admin-name">Admin</div>
+          <div class="sidebar-user-role">Administrador</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" id="admin-logout" style="color:var(--text-error);border-color:rgba(252,129,129,0.2)">
+        <i data-lucide="log-out" width="14" height="14"></i>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────────── -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <h1>Dashboard</h1>
+      <div class="admin-topbar-actions">
+        <span id="topbar-date" style="font-size:var(--text-sm);color:var(--text-muted)"></span>
+        <a href="/admin/products.html" class="btn btn-primary btn-sm">
+          <i data-lucide="plus" width="14" height="14"></i>
+          Nuevo Producto
+        </a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+
+      <!-- Loading -->
+      <div id="dash-loading">
+        <div class="metrics-grid">
+          <div class="skeleton" style="height:110px;border-radius:var(--border-radius-xl)"></div>
+          <div class="skeleton" style="height:110px;border-radius:var(--border-radius-xl)"></div>
+          <div class="skeleton" style="height:110px;border-radius:var(--border-radius-xl)"></div>
+          <div class="skeleton" style="height:110px;border-radius:var(--border-radius-xl)"></div>
+        </div>
+        <div class="skeleton" style="height:220px;border-radius:var(--border-radius-xl);margin-bottom:var(--space-6)"></div>
+      </div>
+
+      <!-- Content -->
+      <div id="dash-content" class="hidden">
+
+        <!-- ── Metric Cards ──────────────────────────────────── -->
+        <div class="metrics-grid">
+          <div class="metric-card gold">
+            <div class="metric-icon gold">
+              <i data-lucide="trending-up" width="20" height="20"></i>
+            </div>
+            <div>
+              <div class="metric-value" id="m-sales">$0</div>
+              <div class="metric-label">Ventas hoy</div>
+              <div class="metric-sub" id="m-orders-today">0 órdenes</div>
+            </div>
+          </div>
+
+          <div class="metric-card silver">
+            <div class="metric-icon silver">
+              <i data-lucide="clock" width="20" height="20"></i>
+            </div>
+            <div>
+              <div class="metric-value" id="m-pending">0</div>
+              <div class="metric-label">Pedidos pendientes</div>
+              <div class="metric-sub">
+                <a href="/admin/orders.html?status=pending" style="color:var(--text-muted);font-size:var(--text-xs)">Ver todos →</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-card copper">
+            <div class="metric-icon copper">
+              <i data-lucide="alert-triangle" width="20" height="20"></i>
+            </div>
+            <div>
+              <div class="metric-value" id="m-low-stock">0</div>
+              <div class="metric-label">Stock bajo (1–4)</div>
+              <div class="metric-sub" id="m-out-stock">0 agotados</div>
+            </div>
+          </div>
+
+          <div class="metric-card steel">
+            <div class="metric-icon" style="background:rgba(113,128,150,0.15);color:var(--steel-light)">
+              <i data-lucide="package" width="20" height="20"></i>
+            </div>
+            <div>
+              <div class="metric-value" id="m-products">0</div>
+              <div class="metric-label">Productos activos</div>
+              <div class="metric-sub" id="m-users">0 clientes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Chart: Ventas 7 días ──────────────────────────── -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Ventas últimos 7 días</div>
+              <div class="chart-subtitle">Total de órdenes no canceladas por día</div>
+            </div>
+            <span id="chart-total" style="font-family:var(--font-title);font-size:var(--text-xl);font-weight:700;color:var(--gold)">$0</span>
+          </div>
+          <div class="bar-chart" id="sales-chart" aria-label="Gráfica de ventas"></div>
+        </div>
+
+        <!-- ── Pedidos recientes ──────────────────────────────── -->
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <span class="admin-table-title">Pedidos recientes</span>
+            <a href="/admin/orders.html" class="btn btn-ghost btn-sm">Ver todos</a>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>#Orden</th>
+                  <th>Cliente</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-tbody">
+                <tr>
+                  <td colspan="5" class="table-empty">
+                    <i data-lucide="loader" width="24" height="24"></i>
+                    <p>Cargando...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin/dashboard.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

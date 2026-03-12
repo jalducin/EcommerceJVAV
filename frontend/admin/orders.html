@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedidos — MetalShop Admin</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menú">
+  <i data-lucide="menu" width="20" height="20"></i>
+</button>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-logo">
+      <a href="/admin/dashboard.html">⚙ MetalShop</a>
+      <span class="sidebar-badge">Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="/admin/dashboard.html" class="sidebar-link">
+        <i data-lucide="layout-dashboard" width="16" height="16"></i> Dashboard
+      </a>
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Gestión</div>
+      <a href="/admin/products.html" class="sidebar-link">
+        <i data-lucide="package" width="16" height="16"></i> Productos
+      </a>
+      <a href="/admin/orders.html" class="sidebar-link active">
+        <i data-lucide="shopping-bag" width="16" height="16"></i> Pedidos
+      </a>
+      <div class="sidebar-section-label" style="margin-top:var(--space-3)">Tienda</div>
+      <a href="/" class="sidebar-link" target="_blank">
+        <i data-lucide="store" width="16" height="16"></i> Ver tienda
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <i data-lucide="user-circle" width="32" height="32" style="color:var(--gold);flex-shrink:0"></i>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="admin-name">Admin</div>
+          <div class="sidebar-user-role">Administrador</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" id="admin-logout" style="color:var(--text-error);border-color:rgba(252,129,129,0.2)">
+        <i data-lucide="log-out" width="14" height="14"></i> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <h1>Pedidos</h1>
+      <div class="admin-topbar-actions">
+        <span id="orders-count" style="font-size:var(--text-sm);color:var(--text-muted)"></span>
+      </div>
+    </header>
+
+    <main class="admin-content">
+
+      <!-- Status filter tabs -->
+      <div class="filter-tabs" id="status-tabs" style="margin-bottom:var(--space-5)">
+        <button class="filter-tab active" data-status="">Todos</button>
+        <button class="filter-tab" data-status="pending">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;vertical-align:middle;margin-right:4px"></span>
+          Pendientes
+        </button>
+        <button class="filter-tab" data-status="shipped">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--silver);display:inline-block;vertical-align:middle;margin-right:4px"></span>
+          Enviados
+        </button>
+        <button class="filter-tab" data-status="delivered">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--text-success);display:inline-block;vertical-align:middle;margin-right:4px"></span>
+          Entregados
+        </button>
+        <button class="filter-tab" data-status="cancelled">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--text-error);display:inline-block;vertical-align:middle;margin-right:4px"></span>
+          Cancelados
+        </button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <span class="admin-table-title">Listado de Pedidos</span>
+          <div class="table-search-wrap">
+            <input type="search" class="table-search" id="order-search" placeholder="Buscar por email o #orden..." style="width:260px" aria-label="Buscar pedido" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#Orden</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Envío</th>
+                <th>Fecha</th>
+                <th>Cambiar Estado</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody">
+              <tr><td colspan="7" class="table-empty">
+                <i data-lucide="loader" width="24" height="24" style="margin:0 auto var(--space-2);display:block"></i>
+                <p>Cargando pedidos...</p>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-pagination" id="orders-pagination"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ── Modal detalle de pedido ───────────────────────────────────── -->
+<div class="modal-overlay" id="order-detail-modal" role="dialog" aria-modal="true" aria-labelledby="order-detail-title">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="order-detail-title">Detalle del Pedido</h2>
+      <button class="modal-close" id="close-order-modal" aria-label="Cerrar">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="order-detail-body">
+      <!-- JS rellena -->
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/admin/orders.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
