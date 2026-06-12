@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
 from backend.config import settings
+from backend.routers import accounts as accounts_router
 from backend.routers import catalog as catalog_router
 from backend.routers import store as store_router
 
@@ -35,6 +36,7 @@ app.add_middleware(
 )
 
 app.include_router(store_router.router)
+app.include_router(accounts_router.router)
 app.include_router(catalog_router.router)
 
 

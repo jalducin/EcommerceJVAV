@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from backend.deps import require_admin
 from backend.repositories import product_repo, store_repo
 from backend.schemas.catalog import Product, ProductCreate, ProductList, ProductUpdate
 
@@ -49,13 +50,17 @@ def get_product(product_id: str) -> Product:
 
 
 @router.post("", response_model=Product, status_code=status.HTTP_201_CREATED)
-def create_product(data: ProductCreate) -> Product:
+def create_product(
+    data: ProductCreate, _admin: dict = Depends(require_admin)
+) -> Product:
     _validate_category(data.category)
     return product_repo.create_product(data)
 
 
 @router.put("/{product_id}", response_model=Product)
-def update_product(product_id: str, data: ProductUpdate) -> Product:
+def update_product(
+    product_id: str, data: ProductUpdate, _admin: dict = Depends(require_admin)
+) -> Product:
     if data.category is not None:
         _validate_category(data.category)
     product = product_repo.update_product(product_id, data)
@@ -69,7 +74,7 @@ def update_product(product_id: str, data: ProductUpdate) -> Product:
 @router.delete(
     "/{product_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None
 )
-def delete_product(product_id: str) -> None:
+def delete_product(product_id: str, _admin: dict = Depends(require_admin)) -> None:
     if not product_repo.delete_product(product_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado"

@@ -36,3 +36,20 @@ def client(dynamo):
 
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture
+def admin_headers(client):
+    """Crea un admin y devuelve los headers de autorización Bearer."""
+    from backend.repositories import user_repo
+    from backend.schemas.account import UserCreate
+
+    user_repo.create_user(
+        UserCreate(email="admin@shop.mx", password="adminpass", full_name="Admin"),
+        role="admin",
+    )
+    resp = client.post(
+        "/api/auth/login", json={"email": "admin@shop.mx", "password": "adminpass"}
+    )
+    token = resp.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
