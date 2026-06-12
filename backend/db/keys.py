@@ -1,0 +1,70 @@
+"""Helpers de claves para el diseño single-table.
+
+Centraliza la construcción de PK/SK y de los atributos de GSI por entidad, para que
+los repositorios no esparzan literales de claves.
+"""
+
+from __future__ import annotations
+
+# --- Producto -------------------------------------------------------------
+# PK = PRODUCT#<id>, SK = PRODUCT ; GSI2 = CAT#<categoria> / PRODUCT#<id>
+
+
+def product_pk(product_id: str) -> str:
+    return f"PRODUCT#{product_id}"
+
+
+PRODUCT_SK = "PRODUCT"
+
+
+def product_gsi2(category: str, product_id: str) -> dict:
+    return {"GSI2PK": f"CAT#{category}", "GSI2SK": f"PRODUCT#{product_id}"}
+
+
+# --- Usuario --------------------------------------------------------------
+# PK = USER#<id>, SK = PROFILE ; GSI1 = EMAIL#<email> / USER
+
+
+def user_pk(user_id: str) -> str:
+    return f"USER#{user_id}"
+
+
+USER_SK = "PROFILE"
+
+
+def user_gsi1(email: str) -> dict:
+    return {"GSI1PK": f"EMAIL#{email.lower()}", "GSI1SK": "USER"}
+
+
+# --- Carrito --------------------------------------------------------------
+# PK = USER#<id>, SK = CART#<product_id>#<variant_key>
+
+
+def cart_sk(product_id: str, variant_key: str = "-") -> str:
+    return f"CART#{product_id}#{variant_key}"
+
+
+CART_SK_PREFIX = "CART#"
+
+
+# --- Pedido ---------------------------------------------------------------
+# PK = USER#<id>, SK = ORDER#<created_at>#<id>
+# GSI3 = ORDERS / <status>#<created_at>#<id>
+
+
+def order_sk(created_at: str, order_id: str) -> str:
+    return f"ORDER#{created_at}#{order_id}"
+
+
+ORDER_SK_PREFIX = "ORDER#"
+
+
+def order_gsi3(status: str, created_at: str, order_id: str) -> dict:
+    return {"GSI3PK": "ORDERS", "GSI3SK": f"{status}#{created_at}#{order_id}"}
+
+
+# --- Configuración de tienda ---------------------------------------------
+# PK = CONFIG, SK = STORE
+
+CONFIG_PK = "CONFIG"
+CONFIG_SK = "STORE"

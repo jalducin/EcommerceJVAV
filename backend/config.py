@@ -2,12 +2,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
-    SECRET_KEY: str
+    # DATABASE_URL: legacy (monolito SQLAlchemy). Opcional durante la migración a DynamoDB.
+    DATABASE_URL: str = "sqlite+aiosqlite:///./metalshop.db"
+    SECRET_KEY: str = "dev-local-insecure-key-change-me"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ENVIRONMENT: str = "development"
     FRONTEND_URL: str = "http://localhost:8000"
+
+    # DynamoDB (arquitectura serverless)
+    DYNAMODB_TABLE: str = "metalshop"
+    AWS_REGION: str = "us-east-2"
+    # Endpoint local opcional (DynamoDB Local); None = AWS real
+    DYNAMODB_ENDPOINT_URL: str | None = None
 
     # Email settings
     SMTP_HOST: str | None = None
