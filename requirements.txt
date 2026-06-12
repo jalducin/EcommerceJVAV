@@ -1,0 +1,11 @@
+# Dependencias de runtime para el empaquetado de la Lambda (SAM build).
+# La fuente de verdad de dependencias del proyecto es pyproject.toml (Poetry);
+# este archivo lista solo lo que la función necesita en ejecución.
+fastapi>=0.115
+mangum>=0.21
+boto3>=1.43
+pydantic>=2
+pydantic-settings>=2
+python-jose[cryptography]>=3.3
+bcrypt>=4
+email-validator>=2

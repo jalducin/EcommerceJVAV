@@ -50,13 +50,22 @@ credenciales en el repositorio. La región y el entorno SHALL ser parametrizable
 - **THEN** obtiene las credenciales de AWS desde Secrets/OIDC configurados en GitHub
 - **AND** no existe ningún secreto de AWS versionado en el repositorio
 
-### Requirement: Despliegue gateado por disponibilidad de la plantilla SAM
+### Requirement: Despliegue con opt-in explícito (no romper main)
 
-Mientras no exista la plantilla SAM (`template.yaml`), la etapa de despliegue SHALL detectar su ausencia y
-finalizar sin error indicando que el despliegue está pendiente, para no romper el pipeline en `main`.
+La etapa de despliegue SHALL requerir un opt-in explícito (variable de repositorio
+`AWS_DEPLOY_ENABLED=true`) además de `main`, push y CI verde. Mientras el opt-in no esté activo (p. ej.
+antes de configurar el rol OIDC), la etapa de despliegue NO SHALL ejecutarse, de modo que `main` no se
+rompa. Como salvaguarda adicional, si no existe `template.yaml`, el job SHALL terminar sin error
+indicando que el despliegue está pendiente.
 
-#### Scenario: Sin template.yaml, deploy queda pendiente
+#### Scenario: Sin opt-in, no se intenta desplegar
 
-- **WHEN** se ejecuta la etapa de despliegue y no existe `template.yaml`
-- **THEN** registra que el despliegue está pendiente (IaC del Sprint 0)
+- **WHEN** se hace push a `main` con CI verde pero sin `AWS_DEPLOY_ENABLED=true`
+- **THEN** la etapa de despliegue no se ejecuta
+- **AND** el pipeline en `main` permanece verde
+
+#### Scenario: Con opt-in pero sin template.yaml
+
+- **WHEN** el opt-in está activo pero no existe `template.yaml`
+- **THEN** el job registra que el despliegue está pendiente (IaC)
 - **AND** la etapa no falla el pipeline

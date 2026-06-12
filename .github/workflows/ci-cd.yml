@@ -55,7 +55,12 @@ jobs:
   deploy:
     name: CD · deploy a AWS (SAM)
     needs: [ci]                 # primero repo de código, después AWS
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Solo en main, en push, y con opt-in explícito (repo variable AWS_DEPLOY_ENABLED=true)
+    # tras configurar el rol OIDC. Evita romper main antes de tener credenciales.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' &&
+      vars.AWS_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
