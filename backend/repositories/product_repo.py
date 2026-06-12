@@ -161,6 +161,13 @@ def list_products(
     return ProductList(items=page, total=total, limit=limit, offset=offset)
 
 
+def put_product(product: Product) -> Product:
+    """Upsert con id explícito (idempotente). Usado por el cargador de datos (seed)."""
+    get_table().put_item(Item=_item_for(product))
+    _write_stock_items(product)
+    return product
+
+
 def update_product(product_id: str, data: ProductUpdate) -> Product | None:
     current = get_product(product_id)
     if not current:
