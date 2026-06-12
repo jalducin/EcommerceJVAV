@@ -12,7 +12,9 @@ from ..services import order as order_service
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 
 
-@router.post("/checkout", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/checkout", response_model=OrderResponse, status_code=status.HTTP_201_CREATED
+)
 async def checkout(
     data: CheckoutRequest,
     db: AsyncSession = Depends(get_db),
@@ -37,7 +39,9 @@ async def get_my_orders(
 
 @router.get("/{order_id}", response_model=OrderDetail)
 async def get_single_order(
-    order_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
+    order_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """Obtiene el detalle de un pedido específico del usuario autenticado."""
     return await order_service.get_order_details(db, order_id, current_user.id)

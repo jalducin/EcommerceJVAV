@@ -87,5 +87,7 @@ async def get_order_detail(db: AsyncSession, user_id: int, order_id: int) -> Ord
     )
     order = result.scalar_one_or_none()
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Orden no encontrada")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Orden no encontrada"
+        )
     return order

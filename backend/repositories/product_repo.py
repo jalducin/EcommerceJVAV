@@ -21,13 +21,43 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+_INTERNAL = ("PK", "SK", "entity", "GSI2PK", "GSI2SK")
+
+
+def _stock_map(product: Product) -> dict[str, int]:
+    """sku -> stock; fuente de verdad del inventario ("-" si no hay variantes)."""
+    if product.variants:
+        return {v.sku: v.stock for v in product.variants}
+    return {"-": product.stock}
+
+
 def _to_product(item: dict) -> Product:
-    data = {
-        k: v
-        for k, v in item.items()
-        if k not in ("PK", "SK", "entity", "GSI2PK", "GSI2SK")
-    }
+    data = {k: v for k, v in item.items() if k not in _INTERNAL}
     return Product(**data)
+
+
+def get_stocks(product_id: str) -> dict[str, int]:
+    """Lee los niveles de stock por sku desde los items de inventario."""
+    resp = get_table().query(
+        KeyConditionExpression=Key("PK").eq(keys.product_pk(product_id))
+        & Key("SK").begins_with(keys.STOCK_SK_PREFIX)
+    )
+    stocks: dict[str, int] = {}
+    for it in resp.get("Items", []):
+        item = from_item(it)
+        stocks[item["sku"]] = int(item["stock"])
+    return stocks
+
+
+def _hydrate(product: Product) -> Product:
+    """Sobrescribe el stock del producto con la fuente de verdad (items STOCK#)."""
+    stocks = get_stocks(product.id)
+    if product.variants:
+        for v in product.variants:
+            v.stock = int(stocks.get(v.sku, v.stock))
+    elif "-" in stocks:
+        product.stock = int(stocks["-"])
+    return product
 
 
 def _item_for(product: Product) -> dict:
@@ -43,9 +73,25 @@ def _item_for(product: Product) -> dict:
     return item
 
 
+def _write_stock_items(product: Product) -> None:
+    table = get_table()
+    for sku, stock in _stock_map(product).items():
+        table.put_item(
+            Item={
+                "PK": keys.product_pk(product.id),
+                "SK": keys.stock_sk(sku),
+                "entity": "stock",
+                "product_id": product.id,
+                "sku": sku,
+                "stock": int(stock),
+            }
+        )
+
+
 def create_product(data: ProductCreate) -> Product:
     product = Product(id=str(uuid.uuid4()), created_at=_now(), **data.model_dump())
     get_table().put_item(Item=_item_for(product))
+    _write_stock_items(product)
     return product
 
 
@@ -54,7 +100,7 @@ def get_product(product_id: str) -> Product | None:
         Key={"PK": keys.product_pk(product_id), "SK": keys.PRODUCT_SK}
     )
     item = from_item(resp.get("Item"))
-    return _to_product(item) if item else None
+    return _hydrate(_to_product(item)) if item else None
 
 
 def _scan_all() -> list[dict]:
@@ -97,7 +143,7 @@ def list_products(
     offset: int = 0,
 ) -> ProductList:
     raw = _query_category(category) if category else _scan_all()
-    products = [_to_product(from_item(it)) for it in raw]
+    products = [_hydrate(_to_product(from_item(it))) for it in raw]
 
     if active_only:
         products = [p for p in products if p.is_active]
@@ -124,6 +170,7 @@ def update_product(product_id: str, data: ProductUpdate) -> Product | None:
     merged.update(updates)
     product = Product(**merged)
     get_table().put_item(Item=_item_for(product))
+    _write_stock_items(product)
     return product
 
 

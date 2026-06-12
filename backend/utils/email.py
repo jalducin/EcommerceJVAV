@@ -25,8 +25,17 @@ fm = FastMail(conf)
 
 async def send_order_confirmation_email(email_to: EmailStr, order: OrderDetail):
     """Envía un email de confirmación de pedido."""
-    if not all([settings.SMTP_HOST, settings.SMTP_USER, settings.SMTP_PASSWORD, settings.EMAILS_FROM]):
-        print("WARN: Faltan variables de entorno de SMTP. No se enviará el email de confirmación.")
+    if not all(
+        [
+            settings.SMTP_HOST,
+            settings.SMTP_USER,
+            settings.SMTP_PASSWORD,
+            settings.EMAILS_FROM,
+        ]
+    ):
+        print(
+            "WARN: Faltan variables de entorno de SMTP. No se enviará el email de confirmación."
+        )
         return
 
     template_body = {
@@ -49,4 +58,6 @@ async def send_order_confirmation_email(email_to: EmailStr, order: OrderDetail):
         await fm.send_message(message, template_name="order_confirmation.html")
         print(f"Email de confirmación enviado a {email_to} para el pedido #{order.id}")
     except Exception as e:
-        print(f"ERROR: No se pudo enviar el email de confirmación a {email_to}. Error: {e}")
+        print(
+            f"ERROR: No se pudo enviar el email de confirmación a {email_to}. Error: {e}"
+        )

@@ -21,6 +21,17 @@ def product_gsi2(category: str, product_id: str) -> dict:
     return {"GSI2PK": f"CAT#{category}", "GSI2SK": f"PRODUCT#{product_id}"}
 
 
+# Inventario por variante (fuente de verdad del stock):
+# PK = PRODUCT#<id>, SK = STOCK#<sku>  ("-" si el producto no tiene variantes)
+
+
+def stock_sk(sku: str) -> str:
+    return f"STOCK#{sku}"
+
+
+STOCK_SK_PREFIX = "STOCK#"
+
+
 # --- Usuario --------------------------------------------------------------
 # PK = USER#<id>, SK = PROFILE ; GSI1 = EMAIL#<email> / USER
 

@@ -9,7 +9,9 @@ from ..services.auth import login_user, refresh_access_token, register_user
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     """Registrar nuevo usuario cliente."""
     user = await register_user(db, user_data)

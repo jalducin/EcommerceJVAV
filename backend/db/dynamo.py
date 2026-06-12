@@ -40,6 +40,11 @@ def get_table():
     return get_resource().Table(settings.DYNAMODB_TABLE)
 
 
+def get_client():
+    """Cliente DynamoDB de bajo nivel (para transact_write_items con formato tipado)."""
+    return boto3.client("dynamodb", **_resource_kwargs())
+
+
 def create_table(table_name: str | None = None) -> None:
     """Crea la tabla single-table con sus GSIs si no existe (idempotente).
 

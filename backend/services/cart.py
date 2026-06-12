@@ -31,7 +31,9 @@ async def get_cart(db: AsyncSession, user_id: int) -> CartResponse:
 async def _get_active_product(db: AsyncSession, product_id: int) -> Product:
     product = await db.get(Product, product_id)
     if not product or not product.is_active:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado"
+        )
     return product
 
 
@@ -60,18 +62,26 @@ async def add_item(db: AsyncSession, user_id: int, data: CartItemCreate) -> None
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Stock insuficiente. Disponible: {product.stock}",
             )
-        db.add(CartItem(user_id=user_id, product_id=data.product_id, quantity=data.quantity))
+        db.add(
+            CartItem(
+                user_id=user_id, product_id=data.product_id, quantity=data.quantity
+            )
+        )
 
     await db.flush()
 
 
-async def update_item(db: AsyncSession, user_id: int, item_id: int, data: CartItemUpdate) -> None:
+async def update_item(
+    db: AsyncSession, user_id: int, item_id: int, data: CartItemUpdate
+) -> None:
     result = await db.execute(
         select(CartItem).where(CartItem.id == item_id, CartItem.user_id == user_id)
     )
     item = result.scalar_one_or_none()
     if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item no encontrado"
+        )
 
     product = await _get_active_product(db, item.product_id)
     if data.quantity > product.stock:
@@ -89,12 +99,16 @@ async def remove_item(db: AsyncSession, user_id: int, item_id: int) -> None:
     )
     item = result.scalar_one_or_none()
     if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item no encontrado"
+        )
     await db.delete(item)
     await db.flush()
 
 
-async def sync_cart(db: AsyncSession, user_id: int, data: CartSyncRequest) -> CartResponse:
+async def sync_cart(
+    db: AsyncSession, user_id: int, data: CartSyncRequest
+) -> CartResponse:
     """Fusiona carrito de localStorage con la BD al iniciar sesión."""
     for sync_item in data.items:
         product = await db.get(Product, sync_item.product_id)

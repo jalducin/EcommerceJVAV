@@ -29,7 +29,9 @@ async def get_dashboard_stats(db: AsyncSession) -> DashboardStats:
     pending_orders = await db.scalar(pending_orders_query)
 
     # Estadísticas de productos
-    low_stock_query = select(func.count(Product.id)).where(Product.stock > 0, Product.stock < 5)
+    low_stock_query = select(func.count(Product.id)).where(
+        Product.stock > 0, Product.stock < 5
+    )
     low_stock_count = await db.scalar(low_stock_query)
 
     out_of_stock_query = select(func.count(Product.id)).where(Product.stock == 0)
@@ -81,7 +83,11 @@ async def get_admin_orders(
     db: AsyncSession, limit: int, offset: int, status: str | None
 ) -> AdminOrderList:
     """Obtiene todos los pedidos con paginación y filtro."""
-    query = select(Order).options(selectinload(Order.user)).order_by(Order.created_at.desc())
+    query = (
+        select(Order)
+        .options(selectinload(Order.user))
+        .order_by(Order.created_at.desc())
+    )
     count_query = select(func.count(Order.id))
 
     if status:
@@ -99,7 +105,9 @@ async def update_order_status(db: AsyncSession, order_id: int, data: OrderStatus
     """Actualiza el estado de un pedido."""
     order = await db.get(Order, order_id)
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado"
+        )
 
     order.status = data.status
     db.add(order)

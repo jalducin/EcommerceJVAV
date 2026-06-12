@@ -16,7 +16,9 @@ from mangum import Mangum
 
 from backend.config import settings
 from backend.routers import accounts as accounts_router
+from backend.routers import cart_dynamo as cart_router
 from backend.routers import catalog as catalog_router
+from backend.routers import orders_dynamo as orders_router
 from backend.routers import store as store_router
 
 app = FastAPI(
@@ -38,6 +40,8 @@ app.add_middleware(
 app.include_router(store_router.router)
 app.include_router(accounts_router.router)
 app.include_router(catalog_router.router)
+app.include_router(cart_router.router)
+app.include_router(orders_router.router)
 
 
 @app.get("/api/health", tags=["health"])

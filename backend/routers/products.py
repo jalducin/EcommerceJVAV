@@ -26,7 +26,9 @@ async def list_products(
     db: AsyncSession = Depends(get_db),
 ):
     """Catálogo público de productos con filtros y paginación."""
-    items, total = await get_products(db, limit, offset, category, search, min_price, max_price)
+    items, total = await get_products(
+        db, limit, offset, category, search, min_price, max_price
+    )
     return ProductList(items=items, total=total, limit=limit, offset=offset)
 
 

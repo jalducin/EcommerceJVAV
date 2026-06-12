@@ -11,7 +11,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, index=True, nullable=False
+    )
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), default="client", nullable=False)
@@ -22,4 +24,6 @@ class User(Base):
 
     # Relaciones
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="user")  # noqa: F821
-    cart_items: Mapped[list["CartItem"]] = relationship("CartItem", back_populates="user")  # noqa: F821
+    cart_items: Mapped[list["CartItem"]] = relationship(
+        "CartItem", back_populates="user"
+    )  # noqa: F821

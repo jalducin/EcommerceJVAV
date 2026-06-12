@@ -17,7 +17,9 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     stock: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     category: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
-    images: Mapped[list | None] = mapped_column(JSON, nullable=True)  # ["url1", "url2", ...]
+    images: Mapped[list | None] = mapped_column(
+        JSON, nullable=True
+    )  # ["url1", "url2", ...]
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

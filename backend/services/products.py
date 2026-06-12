@@ -40,7 +40,9 @@ async def get_product(db: AsyncSession, product_id: int) -> Product:
     )
     product = result.scalar_one_or_none()
     if not product:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado"
+        )
     return product
 
 
@@ -52,7 +54,9 @@ async def create_product(db: AsyncSession, data: ProductCreate) -> Product:
     return product
 
 
-async def update_product(db: AsyncSession, product_id: int, data: ProductUpdate) -> Product:
+async def update_product(
+    db: AsyncSession, product_id: int, data: ProductUpdate
+) -> Product:
     product = await get_product(db, product_id)
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(product, key, value)
