@@ -45,3 +45,10 @@ htmlcov/
 
 # Docker
 .docker/
+
+# SDD / OpenSpec / agentes
+.worktrees/
+.mcp.json
+**/.claude/settings.json
+**/.claude/settings.local.json
+**/prompts_master.md

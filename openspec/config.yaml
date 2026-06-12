@@ -1,0 +1,52 @@
+schema: spec-driven
+
+# ---------------------------------------------------------------------------
+# Contexto del proyecto MetalShop
+# Este bloque se muestra a la IA al crear cualquier artefacto OpenSpec.
+# ---------------------------------------------------------------------------
+context: |
+  Proyecto: MetalShop — ecommerce con UI metálica premium (plata, oro, acero, cobre).
+  Stack tecnológico: Python 3.11 + FastAPI + SQLAlchemy 2.0 + Alembic; SQLite (dev) / PostgreSQL (prod);
+    Auth JWT (python-jose) + bcrypt (passlib); FastAPI-Mail; Uvicorn/Gunicorn.
+    Frontend: HTML5 + CSS3 + JavaScript Vanilla (sin frameworks), CSS Custom Properties, Fetch API,
+    Google Fonts (Rajdhani + Inter), Lucide Icons (CDN). Tests: pytest + pytest-asyncio + httpx. Lint: Ruff.
+    Dependencias con Poetry. Docker + Docker Compose.
+  Arquitectura: capas en backend/ (models -> schemas -> routers -> services -> utils); la lógica de
+    negocio vive en services/, nunca en routers. Frontend estático servido por FastAPI (StaticFiles).
+  Dominio: tienda en línea (catálogo, carrito dual localStorage/BD, checkout, auth, historial de pedidos,
+    panel admin). Sin pagos reales en v1 (modo simulado).
+  Idioma: documentación y comentarios en español; identificadores de código en inglés (convención del lenguaje).
+  Control de versiones: conventional commits; ramas feature/<change-name>.
+
+  Estándares del proyecto (fuente única de verdad): toda creación e implementación de
+  artefactos DEBE seguir el contexto técnico en docs/. Leer y aplicar:
+  - docs/base-standards.md — principios base, idioma, skills, planificación y reglas OpenSpec.
+  - docs/documentation-standards.md — estructura y mantenimiento de la documentación.
+  - docs/backend-standards.md — Python / FastAPI / SQLAlchemy / Alembic / pytest / Ruff / seguridad.
+  - docs/frontend-standards.md — HTML/CSS/JS vanilla, paleta metálica y responsive mobile-first.
+
+  Para implementar: adopta el agente relevante de ai-specs/agents/ según el tipo de cambio
+  (backend-developer para API/datos; frontend-developer para HTML/CSS/JS).
+
+# ---------------------------------------------------------------------------
+# Reglas por artefacto (agnósticas de tecnología)
+# ---------------------------------------------------------------------------
+rules:
+  _global:
+    - Antes de crear cualquier artefacto, leer y aplicar docs/base-standards.md
+    - Aplicar los docs/*-standards.md que correspondan al área del cambio
+    - Mantener consistencia con los specs existentes en openspec/specs/
+
+  tasks:
+    - Dividir las tareas en bloques de máximo 2 horas
+    - El primer paso (Step 0) SIEMPRE es crear la feature branch
+    - Toda lista de tareas debe incluir los pasos obligatorios definidos en
+      .claude/rules/openspec-tasks-mandatory-steps.md (rama, pruebas, verificación manual, documentación)
+
+  spec:
+    - Definir QUÉ debe hacer el sistema en términos de requisitos y escenarios verificables
+    - Cada capability nueva genera un specs/<nombre>/spec.md en kebab-case
+
+  design:
+    - Documentar el CÓMO: decisiones técnicas, alternativas consideradas y trade-offs
+    - Incluir solo lo necesario para implementar sin ambigüedad

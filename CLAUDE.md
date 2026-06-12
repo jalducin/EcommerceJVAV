@@ -3,13 +3,41 @@
 
 ---
 
+## 📐 Metodología: Spec-Driven Development (OpenSpec)
+
+Este proyecto trabaja bajo **SDD (Spec-Driven Development)** sobre OpenSpec. La especificación es la
+fuente de verdad: todo cambio nuevo o mejora recorre artefactos antes de codificar.
+
+Lee y aplica los estándares base del proyecto: @docs/base-standards.md
+
+```
+proposal  →  specs  →  design  →  tasks  →  (apply / implementación)  →  archive
+   ¿por qué?   ¿qué?     ¿cómo?    ¿pasos?       código + verificación      cierre
+```
+
+- Comandos del flujo en Claude Code: `/opsx:new`, `/opsx:ff`, `/opsx:continue`, `/opsx:explore`,
+  `/opsx:apply`, `/opsx:verify`, `/opsx:sync`, `/opsx:archive`. Ver `README.md` (sección Cómo contribuir).
+- Contexto y reglas del proyecto: `openspec/config.yaml` y `openspec/project.md`.
+- Estándares por área: `docs/base-standards.md`, `docs/documentation-standards.md`,
+  `docs/backend-standards.md`, `docs/frontend-standards.md`.
+- Pasos obligatorios de cada cambio: `.claude/rules/openspec-tasks-mandatory-steps.md`
+  (rama → pruebas → verificación manual ejecutada por el agente → documentación).
+- Para implementar, adopta el agente relevante de `ai-specs/agents/` (`backend-developer`, `frontend-developer`).
+
+> Los archivos `SPEC.md`, `PLAN.md` y `TASKS.md` son la **línea base v1** (historial del producto ya
+> implementado). El trabajo nuevo —mejoras y construcción faltante (backlog v2)— se gestiona como
+> cambios OpenSpec en `openspec/changes/`, no editando esos tres documentos.
+
+---
+
 ## 🎯 Rol
 
 Eres el desarrollador principal de **MetalShop**, un ecommerce en Python con UI metálica premium.
-Siempre consulta los archivos de spec antes de escribir código:
-- `SPEC.md` → qué construir y cómo debe verse
+Consulta el contexto del producto en:
+- `SPEC.md` → qué construye el producto y cómo debe verse (línea base funcional v1)
 - `PLAN.md` → arquitectura, stack y estructura de carpetas
-- `TASKS.md` → qué fase implementar y en qué orden
+- `TASKS.md` → fases implementadas de la v1
+- `openspec/` → cambios vigentes y specs derivados (fuente de verdad para trabajo nuevo)
 
 ---
 
@@ -89,15 +117,21 @@ Siempre usar estas variables CSS, nunca hardcodear colores:
 
 ---
 
-## 🔄 Flujo de trabajo
+## 🔄 Flujo de trabajo (SDD / OpenSpec)
 
-1. Antes de iniciar cualquier tarea, leer la fase correspondiente en `TASKS.md`
-2. Marcar tareas como `[~]` al iniciarlas y `[x]` al completarlas
-3. Un commit por tarea completada con mensaje descriptivo:
+Para cualquier mejora o construcción faltante:
+
+1. **Explora / propón** un cambio con `/opsx:new` (o `/opsx:ff` para generar todos los artefactos de
+   un tirón). Esto crea `openspec/changes/<change-name>/` con proposal → specs → design → tasks.
+2. **Step 0 siempre es crear la feature branch** (`feature/<change-name>`), seguido de los pasos
+   obligatorios de `.claude/rules/openspec-tasks-mandatory-steps.md`.
+3. **Implementa** con `/opsx:apply`, marcando tareas `[x]` solo tras ejecutar y verificar tú mismo
+   (pruebas + verificación manual + restauración de estado + documentación).
+4. **Verifica** contra los artefactos con `/opsx:verify` y **archiva** con `/opsx:archive`.
+5. Conventional commits, un commit por unidad de trabajo verificada:
    - `feat: add product listing endpoint`
    - `fix: cart sync on login`
-   - `docs: update TASKS progress`
-4. Nunca saltarse fases — completar en orden
+   - `docs: update specs for data-export`
 
 ---
 
