@@ -18,13 +18,33 @@ canales para evitar sobreventa; los pedidos de todos los canales se consolidan e
 Nada específico de un proveedor contamina el dominio. Añadir un proveedor = añadir un adapter, sin tocar
 el núcleo (alineado con el principio business-agnostic del Sprint 0).
 
-## Nota sobre "tier 0" / aprendizaje
+## Política tier 0 + deuda técnica
 
-El valor de arquitectura y specs aplica completo. Para **ejecutar** de verdad, no todos los proveedores
-son gratuitos: usar sandbox/test donde exista (Shopify dev store, WooCommerce local, Stripe/Square/
-Conekta/Clip test mode, HubSpot/Zoho free, MercadoLibre test users, Meta/TikTok/Google sandbox). Requieren
-cuenta pagada o aprobación: **Amazon SP-API, NetSuite, Salesforce, Lightspeed** (specear sí; ejecutar,
-solo si hay acceso).
+**Regla del proyecto:** se prioriza lo ejecutable en **free tier / sandbox**. Lo que requiere cuenta
+pagada o aprobación **no bloquea**: se especa y diseña igual, pero su **implementación queda diferida como
+deuda técnica** hasta que exista acceso. Así avanzamos con valor real sin gasto.
+
+**Ejecutable en tier 0 / sandbox gratis** (implementar):
+- Núcleo: Lambda, API Gateway, DynamoDB, S3/CloudFront, EventBridge/SQS, SES (sandbox). Parameter Store
+  como alternativa gratis a Secrets Manager (ver `integration-platform-core`).
+- Conectores: Shopify (dev store), WooCommerce (local), Stripe test mode, Square sandbox, Conekta/Clip
+  sandbox, HubSpot free, Zoho free, Odoo (community/local), MercadoLibre test users, Meta/TikTok/Google
+  (apps de desarrollo, sujetas a revisión).
+
+### Deuda técnica (diferida — fuera de tier 0)
+
+Requieren cuenta pagada/aprobación; se mantienen specced y diseñados, **implementación pendiente de acceso**:
+
+| Proveedor | Sprint | Motivo | Estado |
+|---|---|---|---|
+| Amazon SP-API | 3 | Cuenta de vendedor profesional + aprobación de app | Specced · impl. diferida |
+| NetSuite | 5 | Licencia/cuenta NetSuite | Specced · impl. diferida |
+| Salesforce | 5 | Org de producción (Developer Edition limitada) | Specced · impl. diferida |
+| Lightspeed | 6 | Cuenta retail de pago | Specced · impl. diferida |
+
+Al implementar cada sprint, sus conectores de deuda técnica se marcan en el `tasks.md` correspondiente
+como diferidos (no se marcan completos) y se deja constancia aquí. Cuando haya acceso, se retoman vía
+`/opsx:continue` del cambio del sprint.
 
 ## Sprints
 
