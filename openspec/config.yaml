@@ -48,5 +48,5 @@ rules:
     - Cada capability nueva genera un specs/<nombre>/spec.md en kebab-case
 
   design:
-    - Documentar el CÓMO: decisiones técnicas, alternativas consideradas y trade-offs
+    - "Documentar el CÓMO (decisiones técnicas, alternativas consideradas y trade-offs)"
     - Incluir solo lo necesario para implementar sin ambigüedad
