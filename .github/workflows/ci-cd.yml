@@ -1,0 +1,98 @@
+name: CI/CD
+
+# Regla: primero se valida el repo de código (job `ci`); solo si pasa, y solo en
+# `main`, se despliega a AWS (job `deploy`, con `needs: ci`).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write  # para autenticación OIDC con AWS
+
+jobs:
+  # ───────────────────────────── Etapa 1: repo de código ─────────────────────
+  ci:
+    name: CI · lint + pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Poetry
+        run: pipx install poetry
+
+      - name: Cachear dependencias
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+
+      - name: Instalar dependencias
+        run: poetry install --no-interaction --no-root
+
+      - name: Lint (Ruff)
+        run: poetry run ruff check .
+
+      - name: Pruebas (DynamoDB mockeado con moto)
+        env:
+          SECRET_KEY: ci-dummy-secret-key-0123456789abcdef
+          AWS_DEFAULT_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: testing
+          AWS_SECRET_ACCESS_KEY: testing
+        run: poetry run pytest tests_serverless/ -q
+
+  # ───────────────────────────── Etapa 2: AWS (gateada) ──────────────────────
+  deploy:
+    name: CD · deploy a AWS (SAM)
+    needs: [ci]                 # primero repo de código, después AWS
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ¿Existe la plantilla SAM?
+        id: tpl
+        run: |
+          if [ -f template.yaml ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Despliegue pendiente: falta template.yaml (IaC del Sprint 0)."
+          fi
+
+      - name: Configurar credenciales AWS (OIDC)
+        if: steps.tpl.outputs.exists == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-2' }}
+
+      - name: Configurar Python + SAM
+        if: steps.tpl.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar AWS SAM CLI
+        if: steps.tpl.outputs.exists == 'true'
+        run: pipx install aws-sam-cli
+
+      - name: SAM build & deploy
+        if: steps.tpl.outputs.exists == 'true'
+        run: |
+          sam build
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
+            --stack-name metalshop-dev \
+            --capabilities CAPABILITY_IAM \
+            --resolve-s3

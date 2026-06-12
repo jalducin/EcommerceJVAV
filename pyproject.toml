@@ -31,6 +31,30 @@ moto = {extras = ["dynamodb"], version = "^5.2.2"}
 
 [tool.ruff]
 line-length = 88
+# TEMPORAL: excluir el monolito legacy (se elimina en el decomiso del Sprint 0,
+# cambio migrate-to-serverless-aws grupo 11). El codigo serverless si se lintea.
+extend-exclude = [
+    "backend/models",
+    "backend/services",
+    "backend/utils",
+    "backend/main.py",
+    "backend/database.py",
+    "backend/dependencies.py",
+    "backend/limiter.py",
+    "backend/routers/auth.py",
+    "backend/routers/products.py",
+    "backend/routers/cart.py",
+    "backend/routers/orders.py",
+    "backend/routers/admin.py",
+    "backend/schemas/auth.py",
+    "backend/schemas/product.py",
+    "backend/schemas/cart.py",
+    "backend/schemas/order.py",
+    "backend/schemas/admin.py",
+    "tests",
+    "alembic",
+    "seed_products.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]

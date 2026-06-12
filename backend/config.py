@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # DATABASE_URL: legacy (monolito SQLAlchemy). Opcional durante la migración a DynamoDB.
+    # DATABASE_URL: legacy del monolito; opcional durante la migración a DynamoDB.
     DATABASE_URL: str = "sqlite+aiosqlite:///./metalshop.db"
     SECRET_KEY: str = "dev-local-insecure-key-change-me"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
