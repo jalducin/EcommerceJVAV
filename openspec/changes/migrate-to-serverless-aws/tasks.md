@@ -81,9 +81,21 @@
 - [ ] 10.3 Smoke test del flujo de compra contra el stack desplegado
 - [ ] 10.4 Revisar el panel de billing/alarma para confirmar costo ~0
 
-## 11. Actualizar documentación (OBLIGATORIO)
+## 11. Decomisionar el monolito (OBLIGATORIO — solo tras verificar el reemplazo serverless)
 
-- [ ] 11.1 Crear `docs/aws-serverless-standards.md` (arquitectura, single-table design, SAM, SES, IAM, tier 0)
-- [ ] 11.2 Actualizar `README.md` y `PLAN.md` (arquitectura serverless, comandos de deploy/seed/local)
-- [ ] 11.3 Actualizar `docs/backend-standards.md` (datos DynamoDB en vez de SQLAlchemy/Alembic; throttling/email)
-- [ ] 11.4 Verificar consistencia documental: 0 referencias rotas, una fuente canónica por dato
+> El código monolito (SQLAlchemy/Alembic/slowapi/StaticFiles/Uvicorn-Gunicorn permanente) deja de servir
+> en serverless. Se elimina SOLO después de que su equivalente esté verde en los grupos 8-10, para no
+> quedar sin nada ejecutable. Consolida los retiros parciales (2.7, 4.1-4.4, 5.3).
+
+- [ ] 11.1 Eliminar la capa relacional: `backend/database.py` (SQLAlchemy), `backend/models/*`, `alembic/`, `alembic.ini`
+- [ ] 11.2 Eliminar `backend/limiter.py` (slowapi) y `seed_products.py` (reemplazado por `seed_dynamodb.py`)
+- [ ] 11.3 Retirar el runtime permanente: `StaticFiles` de `main.py`, Dockerfile stage prod (Gunicorn) y el servicio app de `docker-compose.yml` (repurposar compose solo para DynamoDB Local en dev, o eliminarlo)
+- [ ] 11.4 Quitar dependencias muertas de `pyproject.toml`: `alembic`, `slowapi`, `aiosqlite` (y `sqlalchemy` si ya no se usa)
+- [ ] 11.5 Buscar y eliminar imports/referencias huérfanas al código retirado; `ruff check` y `pytest` siguen en verde
+
+## 12. Actualizar documentación (OBLIGATORIO)
+
+- [ ] 12.1 Crear `docs/aws-serverless-standards.md` (arquitectura, single-table design, SAM, SES, IAM, tier 0)
+- [ ] 12.2 Actualizar `README.md` y `PLAN.md` (arquitectura serverless, comandos de deploy/seed/local; retirar instrucciones de monolito/Docker prod)
+- [ ] 12.3 Actualizar `docs/backend-standards.md` (datos DynamoDB en vez de SQLAlchemy/Alembic; throttling/email)
+- [ ] 12.4 Verificar consistencia documental: 0 referencias rotas, una fuente canónica por dato

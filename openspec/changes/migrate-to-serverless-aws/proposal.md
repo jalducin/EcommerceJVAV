@@ -97,6 +97,10 @@ DynamoDB Local (o `moto`).
 - **Dependencias** (`pyproject.toml`): +`mangum`, +`boto3`/`aioboto3`; −`alembic`, −`slowapi`,
   −`aiosqlite`; revisar `fastapi-mail` (posible reemplazo por SES SDK).
 - **Migraciones**: se elimina `alembic/` y `alembic.ini`.
+- **Decomiso del monolito** (tras verificar el reemplazo serverless): se retira la capa relacional
+  (SQLAlchemy/`models`/Alembic), `slowapi`/`limiter.py`, `seed_products.py`, el servido por `StaticFiles`
+  y el runtime permanente (Dockerfile stage prod con Gunicorn y el servicio app de `docker-compose.yml`).
+  No se elimina hasta que su equivalente esté verde, para no quedar sin nada ejecutable.
 - **Datos/config**: nuevo `seed_dynamodb.py` (dataset intercambiable; default ropa/tenis) y documento de
   configuración de tienda (marca, categorías, moneda, tema).
 - **Infra nueva**: `template.yaml` (SAM), `samconfig.toml`, scripts de despliegue.
