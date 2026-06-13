@@ -32,6 +32,11 @@ OPENAPI_TAGS = [
     {"name": "admin", "description": "Panel admin (requiere rol admin)."},
 ]
 
+# En Lambda+API Gateway el stage (p. ej. /dev) va en la URL pública. root_path se
+# lo indica a FastAPI para que Swagger UI pida el openapi.json con ese prefijo.
+# Local (ENVIRONMENT=development) no usa stage -> root_path vacío.
+_STAGE = settings.ENVIRONMENT if settings.ENVIRONMENT in ("dev", "prod") else ""
+
 app = FastAPI(
     title="JV Market API",
     description=(
@@ -43,6 +48,7 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    root_path=f"/{_STAGE}" if _STAGE else "",
 )
 
 app.add_middleware(
