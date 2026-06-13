@@ -98,7 +98,7 @@ def test_openapi_schema_tags_y_paths():
     from backend.app import app
 
     schema = app.openapi()
-    assert schema["info"]["title"] == "MetalShop API"
+    assert schema["info"]["title"] == "JV Market API"
     tags = {t["name"] for t in schema.get("tags", [])}
     assert {"auth", "products", "cart", "orders", "admin", "config"} <= tags
     paths = schema["paths"]

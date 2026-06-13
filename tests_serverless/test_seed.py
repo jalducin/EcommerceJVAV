@@ -13,7 +13,7 @@ def test_seed_idempotente(dynamo):
 
     # Config y productos sembrados
     cfg = store_repo.get_config()
-    assert cfg.name == "MetalShop"
+    assert cfg.name == "JV Market"
     assert "tenis" in cfg.categories
     todos = product_repo.list_products(limit=100)
     assert todos.total == 12

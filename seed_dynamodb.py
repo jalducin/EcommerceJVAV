@@ -22,7 +22,7 @@ from backend.schemas.store import StoreConfig
 # --- Dataset demo por defecto: ropa y tenis -------------------------------
 
 DEFAULT_CONFIG = StoreConfig(
-    name="MetalShop",
+    name="JV Market",
     categories=["tenis", "ropa", "accesorios"],
     currency="MXN",
     locale="es-MX",
@@ -32,7 +32,7 @@ DEFAULT_CONFIG = StoreConfig(
 )
 
 DEFAULT_ADMIN = UserCreate(
-    email="admin@metalshop.mx", password="Admin123!", full_name="Admin MetalShop"
+    email="admin@metalshop.mx", password="Admin123!", full_name="Admin JV Market"
 )
 
 # Cliente demo para probar el flujo de compra (rol client).

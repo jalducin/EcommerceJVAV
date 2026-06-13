@@ -33,7 +33,7 @@ OPENAPI_TAGS = [
 ]
 
 app = FastAPI(
-    title="MetalShop API",
+    title="JV Market API",
     description=(
         "Plataforma ecommerce multicanal sobre AWS serverless (Lambda + API Gateway + "
         "DynamoDB). Documentación interactiva en `/api/docs`."
