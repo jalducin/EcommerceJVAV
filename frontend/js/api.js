@@ -3,7 +3,9 @@
  * Fetch wrapper con autenticación JWT, refresh automático y manejo de errores.
  */
 
-const API_BASE = '/api';
+// Base de la API: configurable (frontend en CloudFront, API en API Gateway = orígenes
+// distintos). Se define en js/config.js; por defecto '/api' (mismo origen / local).
+const API_BASE = (window.METALSHOP_API_BASE || '/api').replace(/\/$/, '');
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
@@ -166,7 +168,9 @@ function showToast(message, type = 'info', duration = 3500) {
 // ── Format helpers ────────────────────────────────────────────────────────────
 
 function formatPrice(price) {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'USD' }).format(price);
+  const currency = window.METALSHOP_CURRENCY || 'MXN';
+  const locale = window.METALSHOP_LOCALE || 'es-MX';
+  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(price);
 }
 
 function formatDate(dateStr) {

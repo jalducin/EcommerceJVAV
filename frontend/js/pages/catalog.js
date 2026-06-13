@@ -36,18 +36,39 @@
   const $closeFilt  = document.getElementById('close-filters');
   const $sidebar    = document.getElementById('filters-sidebar');
 
-  // Categorías del catálogo
-  const CATEGORIES = [
-    'Herramientas', 'Protección', 'Seguridad', 'Cuchillería',
-    'Navegación', 'Iluminación', 'Accesorios', 'Escalada', 'Supervivencia',
-  ];
+  // Categorías del catálogo (se cargan desde /api/config; fallback vacío)
+  let CATEGORIES = [];
 
   // ── Inicializar ─────────────────────────────────────────────────────────────
-  function init() {
+  async function init() {
+    await loadConfig();
     buildCategoryFilters();
     loadFromURL();
     fetchProducts();
     bindEvents();
+  }
+
+  // ── Configuración de tienda (marca, categorías, moneda) ──────────────────────
+  async function loadConfig() {
+    try {
+      const cfg = await api.get('/config');
+      CATEGORIES = cfg.categories || [];
+      if (cfg.currency) window.METALSHOP_CURRENCY = cfg.currency;
+      if (cfg.locale) window.METALSHOP_LOCALE = cfg.locale;
+      // Aplicar tema (CSS Custom Properties) y marca si están definidos
+      if (cfg.theme) {
+        for (const [k, v] of Object.entries(cfg.theme)) {
+          document.documentElement.style.setProperty(`--${k}`, v);
+        }
+      }
+      if (cfg.name) {
+        document.querySelectorAll('[data-store-name]').forEach((el) => {
+          el.textContent = cfg.name;
+        });
+      }
+    } catch {
+      CATEGORIES = [];
+    }
   }
 
   // ── Construir filtros de categoría ──────────────────────────────────────────
@@ -93,7 +114,7 @@
       const params = {
         limit: PAGE_SIZE,
         offset: state.page * PAGE_SIZE,
-        ...(state.filters.search   && { search: state.filters.search }),
+        ...(state.filters.search   && { q: state.filters.search }),
         ...(state.filters.category && { category: state.filters.category }),
         ...(state.filters.min_price && { min_price: state.filters.min_price }),
         ...(state.filters.max_price && { max_price: state.filters.max_price }),
@@ -168,10 +189,18 @@
     });
   }
 
+  function stockOf(p) {
+    if (p.variants && p.variants.length) {
+      return p.variants.reduce((s, v) => s + (v.stock || 0), 0);
+    }
+    return p.stock || 0;
+  }
+
   function buildCard(p) {
     const imageUrl  = p.images?.[0] || null;
-    const outOfStock = p.stock === 0;
-    const lowStock   = p.stock > 0 && p.stock <= 5;
+    const stock      = stockOf(p);
+    const outOfStock = stock === 0;
+    const lowStock   = stock > 0 && stock <= 5;
 
     const stockBadge = outOfStock
       ? `<span class="badge badge-error">Agotado</span>`
@@ -211,7 +240,7 @@
           <div class="card-footer">
             <span class="card-price">${formatPrice(p.price)}</span>
             <span class="card-stock ${outOfStock ? 'out' : ''}">
-              ${outOfStock ? 'Agotado' : `${p.stock} en stock`}
+              ${outOfStock ? 'Agotado' : `${stock} en stock`}
             </span>
           </div>
         </div>

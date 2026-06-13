@@ -52,3 +52,6 @@ htmlcov/
 **/.claude/settings.json
 **/.claude/settings.local.json
 **/prompts_master.md
+
+# SAM build artifacts
+.aws-sam/
