@@ -22,10 +22,27 @@ from backend.routers import catalog as catalog_router
 from backend.routers import orders_dynamo as orders_router
 from backend.routers import store as store_router
 
+OPENAPI_TAGS = [
+    {"name": "health", "description": "Estado del servicio."},
+    {"name": "config", "description": "Configuración de tienda business-agnostic."},
+    {"name": "auth", "description": "Registro, login (JWT), refresh y perfil."},
+    {"name": "products", "description": "Catálogo: filtros, detalle y CRUD admin."},
+    {"name": "cart", "description": "Carrito del usuario: items y sincronización."},
+    {"name": "orders", "description": "Checkout transaccional e historial."},
+    {"name": "admin", "description": "Panel admin (requiere rol admin)."},
+]
+
 app = FastAPI(
-    title="MetalShop API (serverless)",
-    description="Plataforma ecommerce configurable sobre AWS serverless",
+    title="MetalShop API",
+    description=(
+        "Plataforma ecommerce multicanal sobre AWS serverless (Lambda + API Gateway + "
+        "DynamoDB). Documentación interactiva en `/api/docs`."
+    ),
     version="0.2.0",
+    openapi_tags=OPENAPI_TAGS,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
 )
 
 app.add_middleware(
