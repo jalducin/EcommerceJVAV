@@ -65,3 +65,13 @@ class CanonicalCustomer(BaseModel):
     canonical_id: str
     email: str
     full_name: str = ""
+
+
+class CanonicalPayment(BaseModel):
+    canonical_id: str
+    order_id: str
+    provider: str  # stripe_terminal, clip, conekta, square…
+    transaction_id: str
+    amount: float = 0.0
+    currency: str = "MXN"
+    status: str = "pending"  # pending | paid | failed | refunded
