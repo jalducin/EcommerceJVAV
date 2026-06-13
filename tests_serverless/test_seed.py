@@ -8,7 +8,7 @@ def test_seed_idempotente(dynamo):
     from seed_dynamodb import seed
 
     r1 = seed()
-    assert r1["products"] == 5
+    assert r1["products"] == 12
     assert r1["admin_created"] is True
 
     # Config y productos sembrados
@@ -16,12 +16,12 @@ def test_seed_idempotente(dynamo):
     assert cfg.name == "MetalShop"
     assert "tenis" in cfg.categories
     todos = product_repo.list_products(limit=100)
-    assert todos.total == 5
+    assert todos.total == 12
 
     # Re-ejecutar no duplica ni recrea el admin
     r2 = seed()
     assert r2["admin_created"] is False
-    assert product_repo.list_products(limit=100).total == 5
+    assert product_repo.list_products(limit=100).total == 12
     assert user_repo.get_user_by_email("admin@metalshop.mx") is not None
 
 

@@ -49,56 +49,137 @@ def _tallas(
     ]
 
 
+def _p(idx, **kw):
+    """Helper para fijar created_at incremental de forma legible."""
+    kw["created_at"] = f"2026-01-{idx:02d}T00:00:00+00:00"
+    return Product(**kw)
+
+
 DEFAULT_PRODUCTS = [
-    Product(
+    # ── Tenis ──────────────────────────────────────────────────────────────
+    _p(
+        1,
         id="tenis-runner-metal",
         name="Tenis Runner Metal",
+        category="tenis",
         description="Sneakers de running con acabado metálico premium.",
         price=1899.0,
-        category="tenis",
         images=["/img/products/runner.jpg", "/img/products/runner2.jpg"],
         variants=_tallas("RUNNER", ["41", "42", "43", "44"], stock=6),
-        created_at="2026-01-01T00:00:00+00:00",
     ),
-    Product(
+    _p(
+        2,
         id="tenis-trail-chrome",
         name="Tenis Trail Chrome",
+        category="tenis",
         description="Sneakers todo terreno con suela reforzada.",
         price=2499.0,
-        category="tenis",
         images=["/img/products/trail.jpg"],
         variants=_tallas("TRAIL", ["40", "41", "42", "43"], stock=4, color="acero"),
-        created_at="2026-01-02T00:00:00+00:00",
     ),
-    Product(
+    _p(
+        3,
+        id="tenis-court-silver",
+        name="Tenis Court Silver",
+        category="tenis",
+        description="Sneakers clásicos de cancha en plata.",
+        price=1599.0,
+        images=["/img/products/court.jpg"],
+        variants=_tallas(
+            "COURT", ["40", "41", "42", "43", "44"], stock=8, color="plata"
+        ),
+    ),
+    _p(
+        4,
+        id="tenis-boost-gold",
+        name="Tenis Boost Gold",
+        category="tenis",
+        description="Sneakers de alto rendimiento con detalle dorado.",
+        price=2899.0,
+        images=["/img/products/boost.jpg"],
+        variants=_tallas("BOOST", ["41", "42", "43"], stock=3, color="oro"),
+    ),
+    # ── Ropa ───────────────────────────────────────────────────────────────
+    _p(
+        5,
         id="hoodie-oversize-gold",
         name="Hoodie Oversize Gold",
+        category="ropa",
         description="Sudadera oversize con detalles dorados.",
         price=899.0,
-        category="ropa",
         images=["/img/products/hoodie.jpg", "/img/products/hoodie2.jpg"],
         variants=_tallas("HOODIE", ["S", "M", "L", "XL"], stock=10),
-        created_at="2026-01-03T00:00:00+00:00",
     ),
-    Product(
+    _p(
+        6,
         id="playera-tech-silver",
         name="Playera Tech Silver",
+        category="ropa",
         description="Playera técnica transpirable con estampado plateado.",
         price=499.0,
-        category="ropa",
         images=["/img/products/tee.jpg"],
         variants=_tallas("TEE", ["S", "M", "L"], stock=15),
-        created_at="2026-01-04T00:00:00+00:00",
     ),
-    Product(
+    _p(
+        7,
+        id="joggers-steel",
+        name="Joggers Steel",
+        category="ropa",
+        description="Pantalón jogger de corte urbano color acero.",
+        price=799.0,
+        images=["/img/products/joggers.jpg"],
+        variants=_tallas("JOG", ["S", "M", "L", "XL"], stock=7, color="acero"),
+    ),
+    _p(
+        8,
+        id="chamarra-chrome",
+        name="Chamarra Chrome",
+        category="ropa",
+        description="Chamarra ligera con acabado metálico.",
+        price=1799.0,
+        images=["/img/products/jacket.jpg"],
+        variants=_tallas("JACKET", ["S", "M", "L"], stock=5, color="cromo"),
+    ),
+    # ── Accesorios ─────────────────────────────────────────────────────────
+    _p(
+        9,
         id="gorra-copper",
         name="Gorra Copper",
+        category="accesorios",
         description="Gorra snapback con logo cobre.",
         price=349.0,
-        category="accesorios",
         images=["/img/products/cap.jpg"],
-        stock=20,  # sin variantes
-        created_at="2026-01-05T00:00:00+00:00",
+        stock=20,
+    ),
+    _p(
+        10,
+        id="mochila-urban",
+        name="Mochila Urban",
+        category="accesorios",
+        description="Mochila urbana resistente al agua.",
+        price=1099.0,
+        images=["/img/products/backpack.jpg"],
+        stock=12,
+    ),
+    _p(
+        11,
+        id="calcetines-metal-pack",
+        name="Calcetines Metal (pack 3)",
+        category="accesorios",
+        description="Pack de 3 pares de calcetines deportivos.",
+        price=199.0,
+        images=["/img/products/socks.jpg"],
+        stock=40,
+    ),
+    _p(
+        12,
+        id="lentes-solar-gold",
+        name="Lentes Solar Gold",
+        category="accesorios",
+        description="Lentes de sol con armazón dorado y filtro UV.",
+        price=649.0,
+        images=["/img/products/sunglasses.jpg"],
+        stock=9,
     ),
 ]
 
