@@ -50,4 +50,6 @@ def health() -> dict:
 
 
 # Handler para AWS Lambda (API Gateway).
-handler = Mangum(app)
+# El stage de HTTP API (p. ej. /dev) va en el path; se le indica a Mangum para
+# que lo recorte y FastAPI vea /api/... (el stage coincide con ENVIRONMENT).
+handler = Mangum(app, api_gateway_base_path=f"/{settings.ENVIRONMENT}")
