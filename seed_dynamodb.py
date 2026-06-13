@@ -35,6 +35,11 @@ DEFAULT_ADMIN = UserCreate(
     email="admin@metalshop.mx", password="Admin123!", full_name="Admin MetalShop"
 )
 
+# Cliente demo para probar el flujo de compra (rol client).
+DEFAULT_CLIENT = UserCreate(
+    email="cliente@metalshop.mx", password="Cliente123!", full_name="Cliente Demo"
+)
+
 
 def _tallas(
     prefix: str, tallas: list[str], stock: int, color: str = "negro"
@@ -200,6 +205,10 @@ def seed(
     if admin is not None and not user_repo.get_user_by_email(str(admin.email)):
         user_repo.create_user(admin, role="admin")
         admin_created = True
+
+    # Cliente demo (rol client) idempotente.
+    if not user_repo.get_user_by_email(str(DEFAULT_CLIENT.email)):
+        user_repo.create_user(DEFAULT_CLIENT, role="client")
 
     return {
         "config": config.name,
