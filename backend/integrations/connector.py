@@ -31,6 +31,9 @@ class ConnectorBase(ABC):
 
     name: str = "base"
     capabilities: set[Capability] = set()
+    # Deuda técnica: conector specced/codificado pero no ejecutable en tier 0
+    # (requiere cuenta pagada/aprobación). Su verificación en vivo queda diferida.
+    deferred: bool = False
 
     def supports(self, capability: Capability) -> bool:
         return capability in self.capabilities
