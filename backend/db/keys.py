@@ -79,3 +79,24 @@ def order_gsi3(status: str, created_at: str, order_id: str) -> dict:
 
 CONFIG_PK = "CONFIG"
 CONFIG_SK = "STORE"
+
+
+# --- Mapeo de IDs externo <-> canónico (integraciones) -------------------
+# externo -> canónico:  PK = MAP#<connector>#<entity>, SK = EXT#<external_id>
+# canónico -> externo:  PK = ENTITY#<entity>#<canonical_id>, SK = MAPC#<connector>
+
+
+def map_ext_pk(connector: str, entity: str) -> str:
+    return f"MAP#{connector}#{entity}"
+
+
+def map_ext_sk(external_id: str) -> str:
+    return f"EXT#{external_id}"
+
+
+def map_canon_pk(entity: str, canonical_id: str) -> str:
+    return f"ENTITY#{entity}#{canonical_id}"
+
+
+def map_canon_sk(connector: str) -> str:
+    return f"MAPC#{connector}"
