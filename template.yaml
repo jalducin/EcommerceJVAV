@@ -19,6 +19,13 @@ Parameters:
     Type: String
     Default: "*"
     Description: Origen permitido para CORS (en prod, el dominio de CloudFront).
+  DocsPassword:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: >
+      Contraseña para la documentación OpenAPI (Basic auth, usuario 'jvmarket').
+      Vacío = docs deshabilitados (404).
 
 Globals:
   Function:
@@ -32,6 +39,7 @@ Globals:
         SECRET_KEY: !Ref SecretKey
         ENVIRONMENT: !Ref Environment
         FRONTEND_URL: !Ref FrontendUrl
+        DOCS_PASSWORD: !Ref DocsPassword
 
 Resources:
   # ─────────────────────────── API: Lambda + HTTP API ───────────────────────

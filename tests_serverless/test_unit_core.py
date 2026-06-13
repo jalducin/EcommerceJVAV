@@ -109,5 +109,34 @@ def test_openapi_schema_tags_y_paths():
         "/api/config",
     ):
         assert p in paths
-    assert app.docs_url == "/api/docs"
-    assert app.openapi_url == "/api/openapi.json"
+    # Docs nativos deshabilitados: se sirven por rutas propias protegidas (ver candado).
+    assert app.docs_url is None
+    assert app.openapi_url is None
+
+
+def test_docs_auth_check():
+    """La verificación Basic de docs acepta credenciales correctas y rechaza malas."""
+    import pytest
+    from fastapi import HTTPException
+    from fastapi.security import HTTPBasicCredentials
+
+    from backend import app as appmod
+    from backend.config import settings
+
+    settings.DOCS_USER = "jvmarket"
+    settings.DOCS_PASSWORD = "s3cret"
+    ok = HTTPBasicCredentials(username="jvmarket", password="s3cret")
+    assert appmod._check_docs_auth(ok) == "jvmarket"
+    for bad in (
+        HTTPBasicCredentials(username="x", password="s3cret"),
+        HTTPBasicCredentials(username="jvmarket", password="mala"),
+    ):
+        with pytest.raises(HTTPException) as exc:
+            appmod._check_docs_auth(bad)
+        assert exc.value.status_code == 401
+
+
+def test_docs_deshabilitados_sin_password(client):
+    """Sin DOCS_PASSWORD configurada al importar la app, los docs responden 404."""
+    assert client.get("/api/docs").status_code == 404
+    assert client.get("/api/openapi.json").status_code == 404

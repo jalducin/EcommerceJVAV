@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     # Remitente para correos transaccionales (Amazon SES)
     EMAILS_FROM: str | None = None
 
+    # Documentación OpenAPI: protegida con Basic auth. Si DOCS_PASSWORD está vacío,
+    # los docs quedan deshabilitados (404) — seguro por defecto.
+    DOCS_USER: str = "jvmarket"
+    DOCS_PASSWORD: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
