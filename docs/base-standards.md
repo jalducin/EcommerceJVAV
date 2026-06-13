@@ -85,3 +85,39 @@ Orden requerido:
 4. Re-ejecutar la verificación contra los artefactos actualizados antes de archivar.
 
 No aplicar arreglos directos solo en código dentro de esa ventana sin actualizar los artefactos OpenSpec.
+
+## 8. Autonomía: no pedir autorización para lo básico
+
+Extiende el principio de §5 ("autocorregir y continuar — no detenerse a preguntar"). El agente DEBE
+**actuar de forma autónoma en operaciones básicas, reversibles o de bajo riesgo**, y reportar lo hecho,
+**sin pedir confirmación**. Pausar a preguntar solo para decisiones genuinamente consecuentes.
+
+### Proceder sin preguntar (verde)
+
+- Leer/buscar/explorar el código y la documentación.
+- Correr pruebas, lint, formato, type-check; ejecutar el proyecto en local; verificación manual.
+- Crear/cambiar de feature branch; commits; instalar dependencias del proyecto; generar/editar artefactos
+  OpenSpec; aplicar tareas de un cambio; mover/renombrar/refactorizar código propio del proyecto.
+- Operaciones idempotentes o fácilmente reversibles (incluye recursos efímteros de prueba que se limpian,
+  p. ej. una tabla temporal que se elimina al terminar).
+- Elegir entre alternativas equivalentes de implementación: tomar la mejor opción razonada y seguir.
+
+### Confirmar antes (rojo)
+
+Pedir autorización solo cuando la acción es **difícil de revertir, hacia afuera, o con costo/impacto real**:
+
+- `git push`, abrir/mergear PRs a ramas protegidas, **force-push**, reescritura de historial publicado.
+- **Despliegues a producción**, o creación de infraestructura cloud **persistente** con costo no trivial.
+- Borrado/sobrescritura de datos del usuario, secretos, o recursos que el agente no creó.
+- Acciones que gastan dinero, envían comunicaciones externas, o exponen datos a terceros.
+- Cambios de alcance del producto/arquitectura no derivables del contexto (decisiones de negocio).
+
+### Cómo reportar
+
+Tras actuar, indicar en una línea qué se hizo y el resultado verificado. Si una decisión "verde" resultara
+relevante, dejarla registrada (commit/artefacto), no preguntarla. Ante la duda entre verde y rojo, preferir
+avanzar si es reversible; detenerse solo si el daño potencial es real e irreversible.
+
+> Nota de harness (Claude Code): para reducir prompts de permisos en comandos seguros y rutinarios, el
+> proyecto puede mantener un allowlist en `.claude/settings.json` (no versionado). Ver la skill
+> `update-config` / `fewer-permission-prompts`.

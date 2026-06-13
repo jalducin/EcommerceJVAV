@@ -63,6 +63,13 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /
             Method: ANY
+        # Ruta explícita para poder aplicarle throttling específico (ver RouteSettings).
+        Login:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/auth/login
+            Method: POST
 
   HttpApi:
     Type: AWS::Serverless::HttpApi
