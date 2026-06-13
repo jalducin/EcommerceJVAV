@@ -115,6 +115,16 @@ def get_order(user_id: str, order_id: str) -> Order | None:
     return None
 
 
+def list_all() -> list[Order]:
+    """Todos los pedidos del storefront (admin), vía GSI3 (GSI3PK=ORDERS)."""
+    resp = get_table().query(
+        IndexName="GSI3",
+        KeyConditionExpression=Key("GSI3PK").eq("ORDERS"),
+        ScanIndexForward=False,
+    )
+    return [_to_order(from_item(it)) for it in resp.get("Items", [])]
+
+
 def _to_order(item: dict) -> Order:
     internal = ("PK", "SK", "entity", "GSI3PK", "GSI3SK")
     return Order(**{k: v for k, v in item.items() if k not in internal})
