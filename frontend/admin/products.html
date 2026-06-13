@@ -142,15 +142,7 @@
             <label class="form-label" for="p-category">Categoría</label>
             <select class="form-input" id="p-category">
               <option value="">Sin categoría</option>
-              <option>Herramientas</option>
-              <option>Protección</option>
-              <option>Seguridad</option>
-              <option>Cuchillería</option>
-              <option>Navegación</option>
-              <option>Iluminación</option>
-              <option>Accesorios</option>
-              <option>Escalada</option>
-              <option>Supervivencia</option>
+              <!-- Opciones cargadas dinámicamente desde /api/config -->
             </select>
           </div>
           <div class="form-group">
@@ -164,6 +156,11 @@
             <label class="form-label" for="p-images">URL de imagen</label>
             <input class="form-input" type="url" id="p-images" placeholder="https://ejemplo.com/imagen.jpg" />
             <span style="font-size:var(--text-xs);color:var(--text-muted);margin-top:4px;display:block">URL de la imagen principal del producto</span>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="p-variants">Variantes (JSON, opcional)</label>
+            <textarea class="form-input" id="p-variants" rows="3" placeholder='[{"sku":"RUN-42","attrs":{"talla":"42","color":"negro"},"stock":5}]'></textarea>
+            <span style="font-size:var(--text-xs);color:var(--text-muted);margin-top:4px;display:block">Si hay variantes, el stock se gestiona por variante (el campo Stock de arriba se ignora).</span>
           </div>
         </div>
 
@@ -220,6 +217,7 @@
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/auth.js"></script>
+<script src="/js/admin/guard.js"></script>
 <script src="/js/admin/products.js"></script>
 <script>lucide.createIcons();</script>
 </body>

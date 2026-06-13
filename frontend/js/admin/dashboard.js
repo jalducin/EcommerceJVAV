@@ -1,136 +1,44 @@
 /**
- * MetalShop — Admin: Dashboard
- * Carga de métricas y gráfica de ventas.
+ * Admin — Dashboard (métricas serverless): ventas, pendientes, stock bajo, conectores.
  */
-
 (function AdminDashboard() {
   'use strict';
 
-  // ── Init ──────────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Guard de ruta: solo accesible con rol 'admin'
-    if (!requireAdmin()) {
-      // Ocultar contenido para evitar flash of unstyled/unauthorized content
-      document.body.style.display = 'none';
-      return;
-    }
+  const $metrics = document.getElementById('metrics-grid');
+  const $pendingBadge = document.getElementById('pending-orders-badge');
 
-    // Inicializar iconos de Lucide
-    lucide.createIcons();
+  function card(icon, label, value, extra = '') {
+    return `
+      <div class="metric-card">
+        <div class="metric-icon"><i data-lucide="${icon}" width="20" height="20"></i></div>
+        <div class="metric-body">
+          <div class="metric-value">${value}</div>
+          <div class="metric-label">${label}</div>
+          ${extra ? `<div class="metric-extra">${extra}</div>` : ''}
+        </div>
+      </div>`;
+  }
 
-    // Init User Info
-    const user = Auth.getUser();
-    const $name = document.getElementById('admin-name');
-    if ($name && user) $name.textContent = user.full_name?.split(' ')[0] || user.email;
-
-    // Sidebar & Logout
-    document.getElementById('admin-logout')?.addEventListener('click', () => {
-      Auth.clearTokens();
-      window.location.href = '/login.html';
-    });
-    document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
-      document.getElementById('admin-sidebar')?.classList.toggle('open');
-    });
-
-    // Carga de datos
-    await loadDashboardData();
-  });
-
-  // ── Load Data ─────────────────────────────────────────────────────────────────
-  async function loadDashboardData() {
+  async function init() {
+    await requireAdmin();
+    $metrics.innerHTML = '<p>Cargando métricas…</p>';
     try {
-      const data = await api.get('/admin/dashboard');
-      renderMetrics(data);
-      renderSalesChart(data.sales_last_7_days);
-      updatePendingOrdersBadge(data.orders_pending);
+      const d = await api.get('/admin/dashboard');
+      const c = d.connectors || {};
+      $metrics.innerHTML = [
+        card('dollar-sign', 'Ventas totales', formatPrice(d.sales_total || 0)),
+        card('shopping-bag', 'Pedidos', d.orders_count || 0, `${d.pending_orders || 0} pendientes`),
+        card('alert-triangle', 'Stock bajo', d.low_stock_count || 0,
+          (d.low_stock || []).slice(0, 5).map((p) => `${p.name} (${p.stock})`).join(', ')),
+        card('plug', 'Conectores', `${c.available || 0}/${c.total || 0}`, `${c.deferred || 0} en deuda técnica`),
+      ].join('');
+      if ($pendingBadge) $pendingBadge.textContent = d.pending_orders || 0;
+      if (typeof lucide !== 'undefined') lucide.createIcons({ elements: [$metrics] });
     } catch (err) {
-      console.error('Error al cargar datos del dashboard:', err);
-      showToast(err.message || 'No se pudieron cargar las métricas', 'error');
+      $metrics.innerHTML = `<p>Error al cargar el dashboard: ${err.message}</p>`;
     }
   }
 
-  // ── Rendering ─────────────────────────────────────────────────────────────────
-
-  function renderMetrics(data) {
-    const metrics = [
-      {
-        label: 'Ventas de Hoy',
-        value: formatPrice(data.sales_today),
-        icon: 'dollar-sign',
-        color: 'gold',
-        sub: `${data.orders_today} pedido(s) hoy`,
-      },
-      {
-        label: 'Pedidos Pendientes',
-        value: data.orders_pending,
-        icon: 'package',
-        color: 'silver',
-        sub: 'Listos para procesar',
-      },
-      {
-        label: 'Productos con Bajo Stock',
-        value: data.products_low_stock,
-        icon: 'battery-warning',
-        color: 'copper',
-        sub: 'Menos de 5 unidades',
-      },
-      {
-        label: 'Productos Agotados',
-        value: data.products_out_stock,
-        icon: 'battery-dead',
-        color: 'red',
-        sub: 'Sin unidades disponibles',
-      },
-    ];
-
-    const $grid = document.getElementById('metrics-grid');
-    if (!$grid) return;
-
-    $grid.innerHTML = metrics.map(metric => `
-      <div class="metric-card ${metric.color}">
-        <div class="metric-icon ${metric.color}">
-          <i data-lucide="${metric.icon}" width="20" height="20"></i>
-        </div>
-        <div class="metric-value">${metric.value}</div>
-        <div class="metric-label">${metric.label}</div>
-        <p class="metric-sub">${metric.sub}</p>
-      </div>
-    `).join('');
-
-    lucide.createIcons({ elements: [$grid] });
-  }
-
-  function renderSalesChart(salesData) {
-    const $chart = document.getElementById('sales-chart');
-    if (!$chart) return;
-
-    const maxSale = Math.max(...salesData.map(d => d.total), 1); // Evitar división por cero
-
-    $chart.innerHTML = salesData.map(day => {
-      const heightPercent = (day.total / maxSale) * 100;
-      return `
-        <div class="bar-col">
-          <div class="bar-wrap">
-            <div class="bar-fill"
-                 style="height: ${heightPercent}%;"
-                 data-value="${formatPrice(day.total)}">
-            </div>
-          </div>
-          <div class="bar-label">${day.date}</div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function updatePendingOrdersBadge(count) {
-    const $badge = document.getElementById('pending-orders-badge');
-    if (!$badge) return;
-    if (count > 0) {
-      $badge.textContent = count;
-      $badge.style.display = 'inline-block';
-    } else {
-      $badge.style.display = 'none';
-    }
-  }
-
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
