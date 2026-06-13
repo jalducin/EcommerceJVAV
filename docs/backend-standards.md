@@ -6,7 +6,13 @@ alwaysApply: true
 # Estándares de backend — MetalShop
 
 > Complementa `base-standards.md` y `documentation-standards.md`. Aplica a todo cambio que toque
-> `backend/`, `alembic/`, `tests/` o la configuración del servidor.
+> `backend/` o `tests_serverless/`.
+>
+> **Actualización (migración serverless):** la capa de datos migró de SQLAlchemy/SQLite/Alembic a
+> **DynamoDB single-table** (boto3) sobre **AWS Lambda + API Gateway (Mangum)**; el hashing usa **bcrypt
+> directo** (sin passlib) y el rate limiting es de API Gateway (sin slowapi). Las secciones de abajo que
+> describen SQLAlchemy/Alembic/slowapi quedan **históricas**; la arquitectura vigente está en el cambio
+> `openspec/changes/migrate-to-serverless-aws/` y (al implementarse) en `docs/aws-serverless-standards.md`.
 
 ## 1. Stack (no negociable)
 

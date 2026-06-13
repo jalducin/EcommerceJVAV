@@ -1,39 +1,13 @@
-version: "3.9"
-
+# Desarrollo local: DynamoDB Local para correr/probar el backend serverless sin AWS.
+# Uso:
+#   docker compose up -d
+#   # en .env: DYNAMODB_ENDPOINT_URL=http://localhost:8000
+#   poetry run python seed_dynamodb.py
+#   poetry run uvicorn backend.app:app --reload
 services:
-  app:
-    build:
-      context: .
-      target: development
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: metalshop-dynamodb-local
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
-    environment:
-      DATABASE_URL: postgresql+asyncpg://metalshop:metalshop@db:5432/metalshop
-      ENVIRONMENT: development
-      SECRET_KEY: dev-secret-key-change-in-production-32chars
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - .env
-
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: metalshop
-      POSTGRES_PASSWORD: metalshop
-      POSTGRES_DB: metalshop
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U metalshop -d metalshop"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
+    command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"
