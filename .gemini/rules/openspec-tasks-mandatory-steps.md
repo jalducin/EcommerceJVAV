@@ -52,6 +52,24 @@ Cubrir también los casos de error (entradas inválidas, recursos inexistentes, 
   - Al **mover/renombrar/eliminar** un archivo, actualizar **todas** sus referencias (objetivo: 0 enlaces rotos).
   - Mantener al día el **índice/inventario** de documentación si se agrega, mueve o elimina un documento.
 
+### Step N+4 — Actualizar el runbook del tipo de usuario afectado (OBLIGATORIO)
+Si el cambio **afecta el comportamiento de un tipo de usuario** (visitante, cliente, administrador,
+operador/DevOps), actualizar o crear su runbook en `docs/runbooks/` con las secciones **Objetivo,
+Precondiciones, Pasos, Verificación y Troubleshooting** (ver base-standards §9). El runbook debe reflejar
+el nuevo procedimiento en el mismo PR.
+
+### Step N+5 — Pruebas unitarias de la lógica nueva/cambiada (OBLIGATORIO)
+Incluir pruebas unitarias en `tests/unit/` (según la convención del proyecto en `docs/backend-standards.md`)
+que cubran la lógica nueva o modificada (repositorios, services, integraciones/conectores, pricing,
+seguridad), manteniendo el objetivo de cobertura. Las pruebas de integración no sustituyen a las unitarias
+(base-standards §9).
+
+### Step N+6 — Documentación Swagger/OpenAPI al día (OBLIGATORIO)
+Mantener sincronizada la documentación OpenAPI de los endpoints afectados: `summary`, `description`, `tags`,
+`response_model` y respuestas de error de cada operación tocada, de modo que `/docs` y `/openapi.json`
+reflejen el contrato real. Para integraciones no-HTTP (conectores), actualizar su contrato en
+`docs/integrations-standards.md` (base-standards §9).
+
 ## 3. Plantilla de reporte (en `specs/<change-name>/reports/`)
 
 ```markdown

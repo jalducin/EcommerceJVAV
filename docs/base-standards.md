@@ -121,3 +121,26 @@ avanzar si es reversible; detenerse solo si el daño potencial es real e irrever
 > Nota de harness (Claude Code): para reducir prompts de permisos en comandos seguros y rutinarios, el
 > proyecto puede mantener un allowlist en `.claude/settings.json` (no versionado). Ver la skill
 > `update-config` / `fewer-permission-prompts`.
+
+## 9. Entregables transversales obligatorios
+
+Todo cambio OpenSpec que **afecte el comportamiento de un tipo de usuario** (visitante, cliente,
+administrador, operador/DevOps) DEBE entregar, además del código y en el mismo PR, tres entregables
+transversales. Un cambio que afecte a un tipo de usuario está **incompleto** si omite cualquiera de ellos:
+
+1. **Runbook del/los tipo(s) de usuario afectado(s).** Actualizar o crear el runbook operativo
+   correspondiente en `docs/runbooks/` (uno por tipo de usuario, fuente canónica), con sus secciones
+   **Objetivo, Precondiciones, Pasos, Verificación y Troubleshooting**. Si el cambio altera un flujo que
+   un tipo de usuario ejecuta, su runbook debe reflejar el nuevo procedimiento.
+2. **Pruebas unitarias de la lógica nueva/cambiada.** Incluir pruebas unitarias (en `tests/unit/`, según la
+   convención de `docs/backend-standards.md`) que cubran la lógica nueva o modificada — repositorios,
+   services, integraciones/conectores, pricing o seguridad — manteniendo el objetivo de cobertura del
+   proyecto. Las pruebas de integración (`tests/integration/`) no sustituyen a las unitarias.
+3. **Documentación Swagger/OpenAPI al día.** Mantener sincronizada la documentación OpenAPI de los
+   endpoints afectados: `summary`, `description`, `tags`, `response_model` y respuestas de error de cada
+   operación tocada, de modo que `/docs` y `/openapi.json` reflejen el contrato real. Para integraciones
+   no-HTTP (conectores), actualizar su contrato en `docs/integrations-standards.md`.
+
+Estos tres entregables se operacionalizan como **pasos obligatorios** en
+`.claude/rules/openspec-tasks-mandatory-steps.md` (y su réplica `.gemini/rules/...`, ver §6), que el
+`tasks.md` de cada cambio debe incluir.
