@@ -10,8 +10,10 @@ async function requireAdmin() {
   try {
     const me = await api.get('/auth/me');
     if (me.role !== 'admin') {
-      showToast('Acceso solo para administradores', 'error');
-      setTimeout(() => (window.location.href = '/'), 1500);
+      // Sesión no-admin (p. ej. cliente): enviar a login para entrar como admin.
+      showToast('Esta sesión no es de administrador. Inicia sesión como admin.', 'error');
+      const next = encodeURIComponent(location.pathname);
+      setTimeout(() => (window.location.href = `/login.html?next=${next}`), 1500);
       throw new Error('no admin');
     }
     const nameEl = document.getElementById('admin-name');

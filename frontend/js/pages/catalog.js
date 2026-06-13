@@ -126,6 +126,14 @@
       renderProducts(data.items);
       updateCount(data.total);
       renderPagination(data.total);
+      // Stat del hero: conteo total del catálogo (solo sin filtros aplicados).
+      const sinFiltros =
+        !state.filters.search &&
+        !state.filters.category &&
+        !state.filters.min_price &&
+        !state.filters.max_price;
+      const $stat = document.getElementById('stat-products');
+      if (sinFiltros && $stat) $stat.textContent = data.total;
     } catch (err) {
       $grid.innerHTML = `
         <div class="no-results">
