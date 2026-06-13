@@ -12,7 +12,7 @@ from backend.integrations.connectors.crm_base import CrmConnector
 
 
 class NotSourceOfTruthError(Exception):
-    """El canónico no es la fuente de verdad de `customers`: no se debe empujar al CRM."""
+    """El canónico no es la fuente de verdad de `customers`."""
 
 
 def sync_customer(connector: CrmConnector, customer: CanonicalCustomer) -> str:

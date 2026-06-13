@@ -1,8 +1,8 @@
 """Base de conectores CRM (sync de clientes/contactos).
 
 Capacidad CUSTOMERS. `to_contact` mapea el cliente canónico al payload del CRM;
-`push_contact` lo envía. En ausencia de credenciales reales (tier 0 / local), opera en
-modo simulado devolviendo un id externo determinista; con credenciales haría el POST real.
+`push_contact` lo envía. Sin credenciales reales (tier 0 / local) opera en modo
+simulado devolviendo un id externo determinista; con credenciales haría el POST real.
 """
 
 from __future__ import annotations

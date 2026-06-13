@@ -55,3 +55,6 @@ htmlcov/
 
 # SAM build artifacts
 .aws-sam/
+
+# git worktrees de agentes
+.claude/worktrees/

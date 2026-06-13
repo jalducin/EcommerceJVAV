@@ -1,7 +1,7 @@
-"""Sincronización de inventario entrante desde un ERP/IMS, respetando la fuente de verdad.
+"""Sincronización de inventario entrante desde un ERP/IMS, según la fuente de verdad.
 
-Si el conector ERP/IMS es la fuente de verdad de `inventory`, sus niveles sobrescriben el
-inventario canónico (items STOCK#). Si no lo es, NO se aplica (no se sobrescribe la fuente).
+Si el ERP/IMS es la fuente de verdad de `inventory`, sus niveles sobrescriben el
+inventario canónico (items STOCK#). Si no lo es, no se aplica.
 """
 
 from __future__ import annotations
