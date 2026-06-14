@@ -60,6 +60,10 @@
     <header class="admin-topbar">
       <h1>Productos</h1>
       <div class="admin-topbar-actions">
+        <button class="btn btn-ghost btn-sm" id="btn-manage-categories">
+          <i data-lucide="tags" width="14" height="14"></i>
+          Categorías
+        </button>
         <button class="btn btn-primary btn-sm" id="btn-new-product">
           <i data-lucide="plus" width="14" height="14"></i>
           Nuevo Producto
@@ -153,9 +157,14 @@
             </select>
           </div>
           <div class="form-group full">
-            <label class="form-label" for="p-images">URL de imagen</label>
-            <input class="form-input" type="url" id="p-images" placeholder="https://ejemplo.com/imagen.jpg" />
-            <span style="font-size:var(--text-xs);color:var(--text-muted);margin-top:4px;display:block">URL de la imagen principal del producto</span>
+            <label class="form-label">Imágenes del producto</label>
+            <div id="image-gallery" class="image-gallery" style="display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-2)"></div>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center">
+              <input class="form-input" type="file" id="p-image-file" accept="image/png,image/jpeg,image/webp,image/avif" style="flex:1;min-width:180px" />
+              <input class="form-input" type="url" id="p-image-url" placeholder="o pega una URL https://…" style="flex:1;min-width:180px" />
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-add-image-url">Agregar URL</button>
+            </div>
+            <span style="font-size:var(--text-xs);color:var(--text-muted);margin-top:4px;display:block">La primera imagen es la principal. Arrastra para reordenar; sube archivos o agrega por URL (máx. 5 MB).</span>
           </div>
           <div class="form-group full">
             <label class="form-label" for="p-variants">Variantes (JSON, opcional)</label>
@@ -208,6 +217,30 @@
         <i data-lucide="trash-2" width="14" height="14"></i>
         Desactivar
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Gestión de Categorías ──────────────────────────────── -->
+<div class="modal-overlay admin-modal" id="categories-modal" role="dialog" aria-modal="true" aria-labelledby="categories-title">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="categories-title">Categorías de la tienda</h2>
+      <button class="modal-close" id="close-categories-modal" aria-label="Cerrar">
+        <i data-lucide="x" width="20" height="20"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-3)">
+        <input class="form-input" type="text" id="new-category-name" placeholder="Nueva categoría" maxlength="60" style="flex:1" />
+        <button class="btn btn-primary btn-sm" id="btn-add-category">
+          <i data-lucide="plus" width="14" height="14"></i> Agregar
+        </button>
+      </div>
+      <ul id="categories-list" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)"></ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancel-categories-modal">Cerrar</button>
     </div>
   </div>
 </div>

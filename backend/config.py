@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     # Remitente para correos transaccionales (Amazon SES)
     EMAILS_FROM: str | None = None
 
+    # Subida de imágenes de producto a S3 (presigned PUT bajo prefijo media/)
+    MEDIA_BUCKET: str | None = None
+    MEDIA_PUBLIC_BASE: str | None = None  # base pública (CloudFront), sin slash final
+
     # Documentación OpenAPI: protegida con Basic auth. Si DOCS_PASSWORD está vacío,
     # los docs quedan deshabilitados (404) — seguro por defecto.
     DOCS_USER: str = "jvmarket"

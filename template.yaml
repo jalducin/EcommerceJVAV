@@ -49,6 +49,11 @@ Resources:
       FunctionName: !Sub "metalshop-api-${Environment}"
       CodeUri: .
       Handler: backend.app.handler
+      Environment:
+        Variables:
+          # Subida de imágenes de producto (presigned PUT al prefijo media/).
+          MEDIA_BUCKET: !Ref FrontendBucket
+          MEDIA_PUBLIC_BASE: !Sub "https://${FrontendDistribution.DomainName}"
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
@@ -58,6 +63,10 @@ Resources:
                 - ses:SendEmail
                 - ses:SendRawEmail
               Resource: "*"
+            # Mínimo privilegio: solo PutObject sobre el prefijo media/ del bucket.
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: !Sub "${FrontendBucket.Arn}/media/*"
       Events:
         Proxy:
           Type: HttpApi
@@ -142,6 +151,15 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      # CORS para subir imágenes con URL prefirmada (PUT) desde el navegador.
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - !Ref FrontendUrl
+            AllowedMethods: [PUT, GET, HEAD]
+            AllowedHeaders: ["*"]
+            ExposedHeaders: [ETag]
+            MaxAge: 3000
 
   FrontendOac:
     Type: AWS::CloudFront::OriginAccessControl
