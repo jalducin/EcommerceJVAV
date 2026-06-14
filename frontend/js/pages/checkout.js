@@ -26,6 +26,7 @@
     }
 
     renderOrderItems(items);
+    await setupFulfillment();
     bindForm();
   }
 
@@ -69,8 +70,36 @@
     return valid;
   }
 
+  function fulfillment() {
+    return document.querySelector('input[name="fulfillment"]:checked')?.value || 'ship';
+  }
+
   function validateForm() {
+    // En "recoger en tienda" no se requiere dirección de envío.
+    if (fulfillment() === 'pickup') {
+      return !!document.getElementById('pickup-location')?.value;
+    }
     return FIELDS.map(validateField).every(Boolean);
+  }
+
+  async function setupFulfillment() {
+    const $block = document.getElementById('pickup-block');
+    const $addr = document.getElementById('address-card');
+    const $sel = document.getElementById('pickup-location');
+    try {
+      const cfg = await api.get('/config');
+      if (cfg.pickup_enabled && $sel) {
+        $sel.innerHTML = (cfg.pickup_locations || [])
+          .map((l) => `<option value="${l.id}">${l.name} — ${l.address}</option>`)
+          .join('');
+      }
+    } catch { /* opcional */ }
+    document.querySelectorAll('input[name="fulfillment"]').forEach((r) =>
+      r.addEventListener('change', () => {
+        const pickup = fulfillment() === 'pickup';
+        if ($block) $block.style.display = pickup ? 'block' : 'none';
+        if ($addr) $addr.style.display = pickup ? 'none' : 'block';
+      }));
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────────
@@ -93,16 +122,23 @@
       // Armar payload
       const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'card';
 
+      const isPickup = fulfillment() === 'pickup';
       const payload = {
-        shipping_address: {
-          full_name:   document.getElementById('full_name').value.trim(),
-          street:      document.getElementById('street').value.trim(),
-          city:        document.getElementById('city').value.trim(),
-          state:       document.getElementById('state').value.trim(),
-          postal_code: document.getElementById('postal_code').value.trim(),
-          phone:       document.getElementById('phone').value.trim(),
-          country:     'México',
-        },
+        fulfillment: isPickup ? 'pickup' : 'ship',
+        pickup_location_id: isPickup
+          ? document.getElementById('pickup-location')?.value
+          : null,
+        shipping_address: isPickup
+          ? {}
+          : {
+              full_name:   document.getElementById('full_name').value.trim(),
+              street:      document.getElementById('street').value.trim(),
+              city:        document.getElementById('city').value.trim(),
+              state:       document.getElementById('state').value.trim(),
+              postal_code: document.getElementById('postal_code').value.trim(),
+              phone:       document.getElementById('phone').value.trim(),
+              country:     'México',
+            },
         payment_method: paymentMethod,
       };
 

@@ -25,6 +25,7 @@ from backend.routers import cart_dynamo as cart_router
 from backend.routers import catalog as catalog_router
 from backend.routers import orders_dynamo as orders_router
 from backend.routers import store as store_router
+from backend.routers import wishlist as wishlist_router
 
 OPENAPI_TAGS = [
     {"name": "health", "description": "Estado del servicio."},
@@ -32,7 +33,11 @@ OPENAPI_TAGS = [
     {"name": "auth", "description": "Registro, login (JWT), refresh y perfil."},
     {"name": "products", "description": "Catálogo: filtros, detalle y CRUD admin."},
     {"name": "cart", "description": "Carrito del usuario: items y sincronización."},
-    {"name": "orders", "description": "Checkout transaccional e historial."},
+    {
+        "name": "orders",
+        "description": "Checkout (envío o recoger en tienda) e historial.",
+    },
+    {"name": "wishlist", "description": "Lista de deseos del usuario."},
     {"name": "admin", "description": "Panel admin (requiere rol admin)."},
 ]
 
@@ -93,6 +98,7 @@ if settings.DOCS_PASSWORD:  # docs habilitados solo si hay contraseña configura
             openapi_url=f"{root}/api/openapi.json", title="JV Market API — Docs"
         )
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"]
@@ -108,6 +114,7 @@ app.include_router(accounts_router.router)
 app.include_router(catalog_router.router)
 app.include_router(cart_router.router)
 app.include_router(orders_router.router)
+app.include_router(wishlist_router.router)
 app.include_router(admin_router.router)
 
 

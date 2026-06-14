@@ -43,6 +43,10 @@
                onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
               <i data-lucide="package" width="14" height="14"></i> Mis Pedidos
             </a>
+            <a href="/wishlist.html" style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);color:var(--text-secondary);font-size:var(--text-sm);transition:background var(--transition-fast)"
+               onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+              <i data-lucide="heart" width="14" height="14"></i> Lista de deseos
+            </a>
             ${user.role === 'admin' ? `
               <a href="/admin/dashboard.html" style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);color:var(--text-gold);font-size:var(--text-sm);transition:background var(--transition-fast)"
                  onmouseover="this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.background='transparent'">

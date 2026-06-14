@@ -24,11 +24,44 @@ def checkout(data: CheckoutRequest, user: dict = Depends(get_current_user)) -> O
 
     lines = [OrderLine(**ld) for ld in lines_data]
     subtotal = round(sum(line.unit_price * line.quantity for line in lines), 2)
-    totals = compute_totals(subtotal, store_repo.get_config())
+    config = store_repo.get_config()
+    totals = compute_totals(subtotal, config)
+
+    # Click & collect: recoger en tienda no cobra envío y requiere ubicación válida.
+    pickup_location = None
+    if data.fulfillment == "pickup":
+        if not config.pickup_enabled:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Recoger en tienda no está disponible",
+            )
+        pickup_location = next(
+            (
+                loc
+                for loc in config.pickup_locations
+                if loc.get("id") == data.pickup_location_id
+            ),
+            None,
+        )
+        if not pickup_location:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Ubicación de recogida inválida",
+            )
+        totals = {
+            **totals,
+            "shipping": 0.0,
+            "total": round(totals["subtotal"] + totals["tax"], 2),
+        }
 
     try:
         order = order_repo.create_order(
-            user["id"], lines, totals, data.shipping_address
+            user["id"],
+            lines,
+            totals,
+            data.shipping_address,
+            fulfillment=data.fulfillment,
+            pickup_location=pickup_location,
         )
     except OutOfStockError:
         raise HTTPException(

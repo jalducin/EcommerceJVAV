@@ -3,75 +3,75 @@
    ============================================================ */
 
 :root {
-  /* ── Paleta Metálica ───────────────────────────────────────── */
-  --silver:      #C0C0C0;
-  --gold:        #D4AF37;
-  --steel:       #4A5568;
-  --copper:      #B87333;
-  --chrome:      #E8E8E8;
-  --dark-metal:  #1A1A2E;
+  /* ── Paleta Azul Metálico (suave / profesional) ───────────── */
+  --silver:      #AEB9C7;
+  --gold:        #5B8DD6;   /* acento azul metálico (antes oro) */
+  --steel:       #3E5C76;
+  --copper:      #7FA8D4;   /* acento azul claro (antes cobre) */
+  --chrome:      #E6ECF3;
+  --dark-metal:  #16202E;
 
   /* ── Variantes de Paleta ───────────────────────────────────── */
-  --steel-dark:   #2D3748;
-  --steel-mid:    #3A4A5C;
-  --steel-light:  #718096;
-  --gold-dark:    #A8892A;
-  --gold-light:   #EDD56A;
-  --silver-dark:  #909090;
-  --silver-light: #F0F0F0;
-  --copper-dark:  #8B5A2B;
-  --copper-light: #D4956A;
-  --dark-2:       #16213E;
-  --dark-3:       #0F3460;
-  --dark-4:       #1E2A4A;
+  --steel-dark:   #2A3F52;
+  --steel-mid:    #34506A;
+  --steel-light:  #7E97AE;
+  --gold-dark:    #3E6CA8;
+  --gold-light:   #8FB8EA;
+  --silver-dark:  #8795A6;
+  --silver-light: #DCE3EC;
+  --copper-dark:  #5A87B8;
+  --copper-light: #A6C6E6;
+  --dark-2:       #13202F;
+  --dark-3:       #1B3A57;
+  --dark-4:       #1E2A3A;
 
   /* ── Texto ─────────────────────────────────────────────────── */
-  --text-primary:   #E8E8E8;
-  --text-secondary: #A0AEC0;
-  --text-muted:     #718096;
-  --text-inverse:   #1A1A2E;
-  --text-gold:      #D4AF37;
-  --text-success:   #68D391;
-  --text-error:     #FC8181;
-  --text-warning:   #F6AD55;
+  --text-primary:   #E6ECF3;
+  --text-secondary: #A7B4C4;
+  --text-muted:     #6E8095;
+  --text-inverse:   #16202E;
+  --text-gold:      #6FA0E0;   /* acento azul para texto */
+  --text-success:   #6FD3A6;
+  --text-error:     #F08C8C;
+  --text-warning:   #E7B66A;
 
   /* ── Fondos ─────────────────────────────────────────────────── */
-  --bg-body:    #1A1A2E;
-  --bg-nav:     #0F1629;
-  --bg-card:    #1E2A4A;
-  --bg-surface: #16213E;
-  --bg-input:   #0F1629;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
-  --bg-modal:   #16213E;
+  --bg-body:    #16202E;
+  --bg-nav:     #111A26;
+  --bg-card:    #1E2A3A;
+  --bg-surface: #1A2533;
+  --bg-input:   #111A26;
+  --bg-overlay: rgba(8, 15, 25, 0.66);
+  --bg-modal:   #1A2533;
 
   /* ── Bordes ─────────────────────────────────────────────────── */
-  --border-metal:  1px solid rgba(192, 192, 192, 0.15);
-  --border-gold:   1px solid rgba(212, 175, 55, 0.4);
-  --border-silver: 1px solid rgba(192, 192, 192, 0.3);
-  --border-glow:   1px solid rgba(212, 175, 55, 0.6);
+  --border-metal:  1px solid rgba(174, 185, 199, 0.14);
+  --border-gold:   1px solid rgba(91, 141, 214, 0.35);
+  --border-silver: 1px solid rgba(174, 185, 199, 0.26);
+  --border-glow:   1px solid rgba(91, 141, 214, 0.5);
 
-  /* ── Sombras con brillo metálico ───────────────────────────── */
-  --gold-glow:       0 0 12px rgba(212, 175, 55, 0.4);
-  --gold-glow-lg:    0 0 24px rgba(212, 175, 55, 0.5), 0 0 48px rgba(212, 175, 55, 0.2);
-  --silver-glow:     0 0 12px rgba(192, 192, 192, 0.3);
-  --silver-glow-lg:  0 0 24px rgba(192, 192, 192, 0.4);
-  --copper-glow:     0 0 12px rgba(184, 115, 51, 0.4);
-  --shadow-card:     0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.5), var(--silver-glow);
-  --shadow-btn:      0 2px 12px rgba(212, 175, 55, 0.3);
-  --shadow-nav:      0 2px 20px rgba(0, 0, 0, 0.5);
+  /* ── Sombras con brillo metálico (suaves) ──────────────────── */
+  --gold-glow:       0 0 12px rgba(91, 141, 214, 0.30);
+  --gold-glow-lg:    0 0 24px rgba(91, 141, 214, 0.4), 0 0 48px rgba(91, 141, 214, 0.16);
+  --silver-glow:     0 0 12px rgba(174, 185, 199, 0.22);
+  --silver-glow-lg:  0 0 24px rgba(174, 185, 199, 0.3);
+  --copper-glow:     0 0 12px rgba(127, 168, 212, 0.30);
+  --shadow-card:     0 4px 24px rgba(8, 15, 25, 0.40);
+  --shadow-card-hover: 0 8px 40px rgba(8, 15, 25, 0.5), var(--silver-glow);
+  --shadow-btn:      0 2px 12px rgba(91, 141, 214, 0.28);
+  --shadow-nav:      0 2px 20px rgba(8, 15, 25, 0.5);
 
-  /* ── Gradientes metálicos ───────────────────────────────────── */
-  --gradient-gold:    linear-gradient(135deg, #A8892A 0%, #D4AF37 40%, #EDD56A 60%, #D4AF37 80%, #A8892A 100%);
-  --gradient-silver:  linear-gradient(135deg, #909090 0%, #C0C0C0 40%, #F0F0F0 60%, #C0C0C0 80%, #909090 100%);
-  --gradient-steel:   linear-gradient(135deg, #2D3748 0%, #4A5568 50%, #2D3748 100%);
-  --gradient-copper:  linear-gradient(135deg, #8B5A2B 0%, #B87333 50%, #D4956A 100%);
-  --gradient-dark:    linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
-  --gradient-hero:    linear-gradient(135deg, #0F1629 0%, #1A1A2E 40%, #0F3460 100%);
-  --gradient-card:    linear-gradient(145deg, #1E2A4A 0%, #16213E 100%);
-  --gradient-nav:     linear-gradient(90deg, #0F1629 0%, #16213E 100%);
-  --gradient-btn-primary: linear-gradient(135deg, #A8892A 0%, #D4AF37 50%, #A8892A 100%);
-  --gradient-btn-secondary: linear-gradient(135deg, #2D3748 0%, #4A5568 50%, #2D3748 100%);
+  /* ── Gradientes metálicos (azul) ───────────────────────────── */
+  --gradient-gold:    linear-gradient(135deg, #3E6CA8 0%, #5B8DD6 40%, #8FB8EA 60%, #5B8DD6 80%, #3E6CA8 100%);
+  --gradient-silver:  linear-gradient(135deg, #8795A6 0%, #AEB9C7 40%, #DCE3EC 60%, #AEB9C7 80%, #8795A6 100%);
+  --gradient-steel:   linear-gradient(135deg, #2A3F52 0%, #3E5C76 50%, #2A3F52 100%);
+  --gradient-copper:  linear-gradient(135deg, #5A87B8 0%, #7FA8D4 50%, #A6C6E6 100%);
+  --gradient-dark:    linear-gradient(180deg, #16202E 0%, #1A2533 50%, #1B3A57 100%);
+  --gradient-hero:    linear-gradient(135deg, #111A26 0%, #16202E 40%, #1B3A57 100%);
+  --gradient-card:    linear-gradient(145deg, #1E2A3A 0%, #1A2533 100%);
+  --gradient-nav:     linear-gradient(90deg, #111A26 0%, #1A2533 100%);
+  --gradient-btn-primary: linear-gradient(135deg, #3E6CA8 0%, #5B8DD6 50%, #3E6CA8 100%);
+  --gradient-btn-secondary: linear-gradient(135deg, #2A3F52 0%, #3E5C76 50%, #2A3F52 100%);
 
   /* ── Tipografía ─────────────────────────────────────────────── */
   --font-title: 'Rajdhani', sans-serif;

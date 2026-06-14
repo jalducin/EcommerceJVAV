@@ -18,14 +18,30 @@ class StoreConfig(BaseModel):
     tax_rate: float = 0.16  # 16% (IVA México) por defecto
     shipping_flat: float = 99.0
     free_shipping_threshold: float | None = None
-    # Tokens de tema (CSS Custom Properties); por defecto, identidad metálica MetalShop.
+    # Click & collect: recoger en tienda
+    pickup_enabled: bool = True
+    pickup_locations: list[dict] = Field(
+        default_factory=lambda: [
+            {
+                "id": "cdmx-centro",
+                "name": "JV Market — CDMX Centro",
+                "address": "Av. Juárez 100, Centro, CDMX",
+            },
+            {
+                "id": "gdl-andares",
+                "name": "JV Market — Guadalajara Andares",
+                "address": "Blvd. Puerta de Hierro 4965, Zapopan",
+            },
+        ]
+    )
+    # Tokens de tema (CSS Custom Properties); por defecto, azul metálico suave.
     theme: dict[str, str] = Field(
         default_factory=lambda: {
-            "silver": "#C0C0C0",
-            "gold": "#D4AF37",
-            "steel": "#4A5568",
-            "copper": "#B87333",
-            "chrome": "#E8E8E8",
-            "dark-metal": "#1A1A2E",
+            "silver": "#AEB9C7",
+            "gold": "#5B8DD6",
+            "steel": "#3E5C76",
+            "copper": "#7FA8D4",
+            "chrome": "#E6ECF3",
+            "dark-metal": "#16202E",
         }
     )

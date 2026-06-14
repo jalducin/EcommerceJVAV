@@ -81,6 +81,17 @@ CONFIG_PK = "CONFIG"
 CONFIG_SK = "STORE"
 
 
+# --- Lista de deseos ------------------------------------------------------
+# PK = USER#<id>, SK = WISH#<product_id>
+
+
+def wish_sk(product_id: str) -> str:
+    return f"WISH#{product_id}"
+
+
+WISH_SK_PREFIX = "WISH#"
+
+
 # --- Mapeo de IDs externo <-> canónico (integraciones) -------------------
 # externo -> canónico:  PK = MAP#<connector>#<entity>, SK = EXT#<external_id>
 # canónico -> externo:  PK = ENTITY#<entity>#<canonical_id>, SK = MAPC#<connector>

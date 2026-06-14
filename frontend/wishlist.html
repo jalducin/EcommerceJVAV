@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tu lista de deseos en JV Market." />
+  <title>Lista de deseos — JV Market</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="Navegación principal">
+  <div class="container">
+    <a href="/" class="nav-logo" aria-label="JV Market inicio">⚙ JV Market</a>
+    <div class="nav-actions">
+      <button class="nav-btn nav-btn-cart" id="cart-toggle" aria-label="Abrir carrito">
+        <i data-lucide="shopping-cart" width="20" height="20"></i>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <div id="auth-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrapper">
+  <div class="container">
+    <h1 style="font-family:var(--font-title);margin:var(--space-6) 0">
+      <i data-lucide="heart" width="24" height="24"></i> Lista de deseos
+    </h1>
+    <div id="wishlist-grid" class="products-grid">
+      <p id="wishlist-loading">Cargando…</p>
+    </div>
+  </div>
+</main>
+
+<div id="toast-container"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/pages/wishlist.js"></script>
+<script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+</body>
+</html>
