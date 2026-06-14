@@ -36,6 +36,8 @@ def create_order(
     lines: list[OrderLine],
     totals: dict,
     shipping_address: dict,
+    fulfillment: str = "ship",
+    pickup_location: dict | None = None,
 ) -> Order:
     """Crea el pedido y descuenta inventario atómicamente. Lanza OutOfStockError."""
     order_id = str(uuid.uuid4())
@@ -45,6 +47,8 @@ def create_order(
         user_id=user_id,
         lines=lines,
         shipping_address=shipping_address,
+        fulfillment=fulfillment,
+        pickup_location=pickup_location,
         created_at=created_at,
         **totals,
     )

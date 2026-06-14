@@ -35,6 +35,8 @@ class CartView(BaseModel):
 
 class CheckoutRequest(BaseModel):
     shipping_address: dict = Field(default_factory=dict)
+    fulfillment: str = "ship"  # "ship" (envío) | "pickup" (recoger en tienda)
+    pickup_location_id: str | None = None
 
 
 class OrderLine(BaseModel):
@@ -57,4 +59,6 @@ class Order(BaseModel):
     total: float
     currency: str
     shipping_address: dict = Field(default_factory=dict)
+    fulfillment: str = "ship"
+    pickup_location: dict | None = None
     created_at: str

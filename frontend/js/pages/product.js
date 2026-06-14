@@ -159,6 +159,9 @@
                 <i data-lucide="shopping-cart" width="18" height="18"></i>
                 <span id="add-btn-label">${outOfStock ? "Sin Stock" : "Agregar al Carrito"}</span>
               </button>
+              <button class="btn btn-ghost" id="wishlist-btn" aria-label="Agregar a lista de deseos">
+                <i data-lucide="heart" width="18" height="18"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -249,6 +252,19 @@
         selectedQty,
       );
       showToast(`"${product.name}" agregado al carrito (×${selectedQty})`, "success");
+    });
+
+    document.getElementById("wishlist-btn")?.addEventListener("click", async () => {
+      if (typeof Auth === "undefined" || !Auth.isAuthenticated()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      try {
+        await api.post(`/wishlist/${product.id}`);
+        showToast("Agregado a tu lista de deseos", "success");
+      } catch (err) {
+        showToast(err.message || "No se pudo agregar a la lista", "error");
+      }
     });
   }
 

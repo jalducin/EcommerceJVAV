@@ -162,8 +162,30 @@
 
           <!-- Left: Form -->
           <div>
-            <!-- Dirección de envío -->
+            <!-- Método de entrega: envío o recoger en tienda -->
             <div class="checkout-card">
+              <h2 class="checkout-section-title">
+                <i data-lucide="truck" width="18" height="18"></i>
+                Entrega
+              </h2>
+              <div class="form-grid-2">
+                <label class="filter-check">
+                  <input type="radio" name="fulfillment" value="ship" checked />
+                  <span>Envío a domicilio</span>
+                </label>
+                <label class="filter-check">
+                  <input type="radio" name="fulfillment" value="pickup" />
+                  <span>Recoger en tienda (gratis)</span>
+                </label>
+              </div>
+              <div class="form-group full" id="pickup-block" style="display:none;margin-top:var(--space-3)">
+                <label class="form-label" for="pickup-location">Sucursal de recogida</label>
+                <select class="form-input" id="pickup-location"></select>
+              </div>
+            </div>
+
+            <!-- Dirección de envío -->
+            <div class="checkout-card" id="address-card">
               <h2 class="checkout-section-title">
                 <i data-lucide="map-pin" width="18" height="18"></i>
                 Dirección de Envío
