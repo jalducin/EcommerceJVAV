@@ -1,3 +1,8 @@
+## RENAMED Requirements
+
+- FROM: `### Requirement: Tema visual configurable con MetalShop por defecto`
+- TO: `### Requirement: Tema visual configurable con azul metálico por defecto`
+
 ## MODIFIED Requirements
 
 ### Requirement: Tema visual configurable con azul metálico por defecto
@@ -20,6 +25,8 @@ los nombres de los tokens SHALL mantenerse estables (se redefine su valor, no su
 - **WHEN** la configuración define una paleta distinta a la azul metálico por defecto
 - **THEN** el frontend aplica esos tokens mediante CSS Custom Properties sin recompilar
 - **AND** una tienda que ya sobrescribe el tema conserva su propia paleta
+
+## ADDED Requirements
 
 ### Requirement: Ubicaciones de recogida en la configuración de tienda
 
