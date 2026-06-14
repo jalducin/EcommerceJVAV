@@ -44,6 +44,12 @@ La configuración vive en `samconfig.toml` (`stack_name=metalshop-dev`, `region=
 sam deploy
 ```
 
+> **Subida de imágenes (presigned PUT).** El stack inyecta al Lambda `MEDIA_BUCKET` (el bucket de
+> frontend) y `MEDIA_PUBLIC_BASE` (dominio CloudFront), añade permiso de mínimo privilegio
+> `s3:PutObject` solo sobre `media/*`, y declara CORS (`PUT/GET/HEAD` desde `FrontendUrl`) en el bucket.
+> No hay bucket ni distribución nuevos. Las imágenes subidas quedan bajo `media/` y se sirven por el
+> mismo CloudFront.
+
 Salida esperada: actualización/creación del stack `metalshop-dev` con los outputs `ApiUrl`, `FrontendUrl` y `TableName`. En primer deploy, pasar `SecretKey` real:
 
 ```bash

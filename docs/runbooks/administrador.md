@@ -85,7 +85,48 @@ curl -s -X DELETE "$API/api/products/tenis-forge-steel" \
 
 `DELETE` devuelve `204` sin cuerpo; `404` si el producto no existe.
 
-### 6. Pedidos unificados (todos los canales)
+### 6. Gestionar categorías de la tienda
+
+Las categorías viven en la configuración de tienda y alimentan el selector del formulario de producto.
+Desde el panel (`Productos → Categorías`) o por API:
+
+```bash
+# Listar categorías
+curl -s "$API/api/admin/categories" -H "Authorization: Bearer $TOKEN"
+
+# Agregar (idempotente: no duplica ignorando mayúsculas/espacios)
+curl -s -X POST "$API/api/admin/categories" -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{"name":"tenis"}'
+
+# Eliminar (409 si la usa algún producto activo)
+curl -s -X DELETE "$API/api/admin/categories/tenis" -H "Authorization: Bearer $TOKEN"
+```
+
+`POST` responde `201` con la lista actualizada; `DELETE` responde `204`, o `409` si la categoría está
+en uso por productos activos (primero reasigna o desactiva esos productos).
+
+### 7. Subir imágenes de producto
+
+El formulario de producto admite **varias imágenes** (galería); la **primera es la principal**. Se
+suben con **URL prefirmada** al bucket de frontend (prefijo `media/`) y se sirven por CloudFront. El
+navegador hace el `PUT` directo a S3; el backend solo firma la URL.
+
+```bash
+# 1) Pedir la URL prefirmada (solo image/jpeg|png|webp|avif; otro → 422)
+curl -s -X POST "$API/api/admin/uploads/presign" -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{"filename":"foto.png","content_type":"image/png"}'
+# → {"upload_url":"https://…s3…?X-Amz-…","public_url":"https://<cloudfront>/media/<uuid>.png","key":"media/<uuid>.png"}
+
+# 2) Subir el archivo a la URL prefirmada (mismo Content-Type)
+curl -s -X PUT "<upload_url>" -H "Content-Type: image/png" --data-binary @foto.png
+
+# 3) Guardar public_url en el producto (campo images[])
+```
+
+En el panel basta con elegir el archivo (o pegar una URL) y guardar el producto; quitar/reordenar
+imágenes se hace desde la galería del formulario. Límite recomendado: 5 MB por imagen.
+
+### 8. Pedidos unificados (todos los canales)
 
 ```bash
 # Listar pedidos de todos los canales (web + conectores)
@@ -96,7 +137,7 @@ curl -s -X PATCH "$API/api/admin/orders/channel/<CANONICAL_ID>/status?new_status
   -H "Authorization: Bearer $TOKEN"
 ```
 
-### 7. Conectores de integración
+### 9. Conectores de integración
 
 ```bash
 curl -s "$API/api/admin/connectors" -H "Authorization: Bearer $TOKEN"
@@ -111,6 +152,9 @@ Devuelve la lista de conectores con `name`, `category` (canal, marketplace, soci
 - Tras `is_active:false`, el producto **deja de aparecer** para el visitante (`GET /api/products/{id}` → `404`).
 - `PATCH …/orders/channel/{id}/status` devuelve `{"id":…,"status":…}` y el cambio se refleja en `GET /api/admin/orders`.
 - `GET /api/admin/connectors` lista los conectores con su `status`; los marcados `deuda_tecnica` figuran como `deferred: true`.
+- Tras agregar una categoría, aparece en `GET /api/admin/categories` y en el selector del formulario; agregar un duplicado no la repite.
+- Eliminar una categoría en uso devuelve `409`; sin uso devuelve `204` y deja de ofrecerse.
+- `POST /api/admin/uploads/presign` con tipo de imagen válido devuelve `upload_url`/`public_url` bajo `media/`; un tipo no-imagen devuelve `422`.
 
 ## Troubleshooting
 
@@ -120,5 +164,9 @@ Devuelve la lista de conectores con `name`, `category` (canal, marketplace, soci
 | `401` en el panel | Token expirado (~30 min) | Renovar con `POST /api/auth/refresh` o volver a hacer login. |
 | `422 Categoría inválida: <x>` al crear/editar | La `category` no está en `GET /api/config.categories` | Usar una categoría existente o añadirla a la configuración de tienda antes de crear el producto. |
 | `404 Producto no encontrado` en PUT/DELETE | `product_id` incorrecto | Confirmar el `id` con `GET /api/products`. |
+| `409` al eliminar una categoría | La usa al menos un producto activo | Reasignar o desactivar esos productos y reintentar el `DELETE`. |
+| `422` al pedir URL prefirmada | `content_type` no es de imagen permitida | Usar `image/jpeg`, `image/png`, `image/webp` o `image/avif`. |
+| `503` en `/api/admin/uploads/presign` | `MEDIA_BUCKET` no configurado en el entorno | Confirmar el deploy SAM (env var `MEDIA_BUCKET`/`MEDIA_PUBLIC_BASE`); ver `operador-devops.md`. |
+| La imagen sube pero no se ve (CORS) | El origen no está permitido en el CORS del bucket | Verificar `AllowedOrigins` del bucket (parámetro `FrontendUrl` del stack). |
 | Conector aparece pero no sincroniza | Conector marcado `deferred`/`deuda_tecnica`, o **sin credenciales** en el vault | Confirmar `status` en `GET /api/admin/connectors`; cargar/rotar el secreto `metalshop/connectors/<conector>` (ver `operador-devops.md`). |
 | Dashboard sin datos | Sin pedidos o tabla recién sembrada | Generar pedidos de prueba (flujo de `cliente.md`) y recargar. |
